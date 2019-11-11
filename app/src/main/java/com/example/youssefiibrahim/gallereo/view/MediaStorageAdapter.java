@@ -1,5 +1,9 @@
 package com.example.youssefiibrahim.gallereo.view;
 
+import android.app.Activity;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +15,13 @@ import com.example.youssefiibrahim.gallereo.R;
 
 public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> {
 
+    private Cursor memberMediaStoreCursor;
+    private final Activity memberActivity;
+
+    public MediaStorageAdapter(Activity memberActivity) {
+        this.memberActivity = memberActivity;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -21,12 +32,15 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-
+        Bitmap bitmap = getBitmapMediaStore(i);
+        if (bitmap != null) {
+            viewHolder.getMemberImageView().setImageBitmap(bitmap);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return (memberMediaStoreCursor == null ? 0 : memberMediaStoreCursor.getCount());
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -40,6 +54,54 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
         public ImageView getMemberImageView() {
             return memberImageView;
+        }
+    }
+
+    private Cursor swapCursor(Cursor cursor) {
+        if (memberMediaStoreCursor == cursor) {
+            return null;
+        }
+        Cursor oldCursor = memberMediaStoreCursor;
+        this.memberMediaStoreCursor = cursor;
+        if (cursor != null) {
+            this.notifyDataSetChanged();
+        }
+        return oldCursor;
+    }
+
+    public void changeCursor(Cursor cursor) {
+        Cursor oldCursor = swapCursor(cursor);
+        if (oldCursor != null) {
+            oldCursor.close();
+        }
+    }
+
+    private Bitmap getBitmapMediaStore(int position) {
+        int idIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns._ID);
+        int mediaTypeIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
+
+        memberMediaStoreCursor.moveToPosition(position);
+
+        //Check if video or image
+        switch(memberMediaStoreCursor.getInt(mediaTypeIndex)) {
+            case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
+                return MediaStore.Images.Thumbnails.getThumbnail(
+                    memberActivity.getContentResolver(),
+                        memberMediaStoreCursor.getLong(idIndex),
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        null
+                );
+
+            case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
+                return MediaStore.Video.Thumbnails.getThumbnail(
+                        memberActivity.getContentResolver(),
+                        memberMediaStoreCursor.getLong(idIndex),
+                        MediaStore.Video.Thumbnails.MINI_KIND,
+                        null
+                );
+
+            default:
+                return null;
         }
     }
 }
