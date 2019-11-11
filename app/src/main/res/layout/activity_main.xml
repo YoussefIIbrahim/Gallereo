@@ -9,6 +9,6 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
 
-    tools:context=".MainActivity">
+    tools:context=".view.MainActivity">
 
 </RelativeLayout>
