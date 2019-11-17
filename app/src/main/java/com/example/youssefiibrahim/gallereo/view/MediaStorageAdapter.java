@@ -3,6 +3,7 @@ package com.example.youssefiibrahim.gallereo.view;
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,15 +12,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.youssefiibrahim.gallereo.R;
 
 public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> {
 
     private Cursor memberMediaStoreCursor;
     private final Activity memberActivity;
+    private OnClickThumbListener mOnClickThumbListener;
+
+    public interface OnClickThumbListener {
+        void OnClickImage(Uri imageUri);
+        void OnClickVideo(Uri videoUri);
+    }
 
     public MediaStorageAdapter(Activity memberActivity) {
         this.memberActivity = memberActivity;
+        this.mOnClickThumbListener = (OnClickThumbListener)memberActivity;
+
     }
 
     @NonNull
@@ -32,10 +42,15 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Bitmap bitmap = getBitmapMediaStore(i);
-        if (bitmap != null) {
-            viewHolder.getMemberImageView().setImageBitmap(bitmap);
-        }
+//        Bitmap bitmap = getBitmapMediaStore(i);
+//        if (bitmap != null) {
+//            viewHolder.getMemberImageView().setImageBitmap(bitmap);
+//        }
+        Glide.with(memberActivity)
+                .load(getUriFromMediaStore(i))
+                .centerCrop()
+                .override(96, 96)
+                .into(viewHolder.getMemberImageView());
     }
 
     @Override
@@ -103,5 +118,14 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
             default:
                 return null;
         }
+    }
+
+    private Uri getUriFromMediaStore(int position) {
+        int dataIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+        memberMediaStoreCursor.moveToPosition(position);
+
+        String dataString = memberMediaStoreCursor.getString(dataIndex);
+        Uri mediaUri = Uri.parse("file://" + dataString);
+        return mediaUri;
     }
 }

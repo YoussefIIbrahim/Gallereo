@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Toast;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -37,8 +39,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         memberRecyclerView = (RecyclerView) findViewById(R.id.thumbnailRecyclerView);
+
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         memberRecyclerView.setLayoutManager(gridLayoutManager);
+        int spacingInPixels = 15;
+        memberRecyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
 
         memberMediaStoreAdapter = new MediaStorageAdapter(this);
         memberRecyclerView.setAdapter(memberMediaStoreAdapter);
@@ -88,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String[] projection = {
                 MediaStore.Files.FileColumns._ID,
                 MediaStore.Files.FileColumns.DATE_ADDED,
+                MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.MEDIA_TYPE
         };
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + '='
