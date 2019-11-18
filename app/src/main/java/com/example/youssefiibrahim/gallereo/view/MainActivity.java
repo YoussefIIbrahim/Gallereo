@@ -2,9 +2,11 @@ package com.example.youssefiibrahim.gallereo.view;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -26,7 +28,8 @@ import android.support.v4.widget.CursorAdapter;
 
 import com.example.youssefiibrahim.gallereo.R;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>, MediaStorageAdapter.OnClickThumbListener {
 
     private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
     private final static int MEDIASTORE_LOADER_ID = 0;
@@ -120,5 +123,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         memberMediaStoreAdapter.changeCursor(null);
+    }
+
+    @Override
+    public void OnClickImage(Uri imageUri) {
+        // Toast.makeText(MediaThumbMainActivity.this, "Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
+        Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
+        fullScreenIntent.setData(imageUri);
+        startActivity(fullScreenIntent);
+    }
+
+    @Override
+    public void OnClickVideo(Uri videoUri) {
+        Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
+        videoPlayIntent.setData(videoUri);
+        startActivity(videoPlayIntent);
     }
 }

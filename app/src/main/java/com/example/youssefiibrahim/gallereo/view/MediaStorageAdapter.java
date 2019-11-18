@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.youssefiibrahim.gallereo.R;
+
+import java.io.File;
 
 public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> {
 
@@ -36,7 +39,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.full_screen_image_mode, viewGroup, false);
+                .inflate(R.layout.single_image_thumbnail, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -58,17 +61,24 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         return (memberMediaStoreCursor == null ? 0 : memberMediaStoreCursor.getCount());
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private final ImageView memberImageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             memberImageView = (ImageView) itemView.findViewById(R.id.MediaStoreimageView);
+            memberImageView.setOnClickListener(this);
         }
 
         public ImageView getMemberImageView() {
             return memberImageView;
+        }
+
+        @Override
+        public void onClick(View v) {
+            getOnClickUri(getAdapterPosition());
+
         }
     }
 
@@ -127,5 +137,27 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         String dataString = memberMediaStoreCursor.getString(dataIndex);
         Uri mediaUri = Uri.parse("file://" + dataString);
         return mediaUri;
+    }
+
+    private void getOnClickUri(int position) {
+        int mediaTypeIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
+        int dataIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+
+        memberMediaStoreCursor.moveToPosition(position);
+        String dataString = memberMediaStoreCursor.getString(dataIndex);
+        String authorities = memberActivity.getPackageName() + ".fileprovider";
+        Uri mediaUri = FileProvider.getUriForFile(memberActivity, authorities, new File(dataString));
+//        Uri mediaUri = Uri.parse("file://" + dataString);
+
+        switch (memberMediaStoreCursor.getInt(mediaTypeIndex)) {
+            case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
+                mOnClickThumbListener.OnClickImage(mediaUri);
+                break;
+            case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
+                mOnClickThumbListener.OnClickVideo(mediaUri);
+                break;
+            default:
+        }
+
     }
 }
