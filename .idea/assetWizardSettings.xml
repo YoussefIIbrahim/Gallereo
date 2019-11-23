@@ -16,12 +16,27 @@
                             <entry key="launcher">
                               <value>
                                 <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="foregroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="60" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="$USER_HOME$/Dropbox/AppIcon.jpg" />
-                                      <entry key="foregroundLayerName" value="ic_app_launcher_f" />
-                                      <entry key="outputName" value="ic_app_launcher" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/Documents/shareIcon.jpg" />
+                                      <entry key="foregroundLayerName" value="ic_share_icon_f" />
+                                      <entry key="outputName" value="ic_share_icon" />
                                     </map>
                                   </option>
                                 </PersistentState>

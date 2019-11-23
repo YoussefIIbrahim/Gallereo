@@ -1,16 +1,26 @@
 package com.example.youssefiibrahim.gallereo.view;
 
+import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -20,8 +30,10 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         View.OnLongClickListener {
 
     private Uri mImageUri;
+    private Toolbar toolbar;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,9 +41,33 @@ public class FullScreenImageActivity extends AppCompatActivity implements
 
         ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
         fullScreenImageView.setOnLongClickListener(this);
+        fullScreenImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (getSupportActionBar().isShowing()) {
+//                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        toolbar.animate().translationY(-toolbar.getBottom()).
+                                setInterpolator(new AccelerateInterpolator()).start();
+                        getSupportActionBar().hide();
+                    } else {
+//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        toolbar.animate().translationY(0).
+                                setInterpolator(new DecelerateInterpolator()).start();
+                        getSupportActionBar().show();
+                    }
+                    return true;
+                } else return false;
+            }
+        });
 
+        toolbar = (Toolbar)findViewById(R.id.toolbar1);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.toolbarColor));
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         Intent callingActivityIntent = getIntent();
         if(callingActivityIntent != null) {
@@ -42,7 +78,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
                         .into(fullScreenImageView);
             }
         }
-    }
+        }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,20 +92,6 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         return true;
     }
 
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.image_share_menu:
-                Toast.makeText(this, "share image button selected!", Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                super.onOptionsItemSelected(item);
-        }
-
-        return true;
-    }
-*/
 
     private Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -87,6 +109,24 @@ public class FullScreenImageActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (getSupportActionBar().isShowing()) {
+//                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                toolbar.animate().translationY(-toolbar.getBottom()).
+                        setInterpolator(new AccelerateInterpolator()).start();
+                getSupportActionBar().hide();
+            } else {
+//                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                toolbar.animate().translationY(0).
+                        setInterpolator(new DecelerateInterpolator()).start();
+                getSupportActionBar().show();
+            }
+            return true;
+        } else return false;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -95,4 +135,44 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+
+//    void hideActionBar(final ActionBar actionBar){
+//        if (actionBar != null && actionBar.isShowing()) {
+//            if(toolbar != null) {
+//                toolbar.animate().translationY(-212).alpha(0).setDuration(600L)
+//                        .setListener(new Animator.AnimatorListener() {
+//                            @Override
+//                            public void onAnimationStart(Animator animation) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onAnimationEnd(Animator animation) {
+//                                actionBar.hide();
+//                            }
+//
+//                            @Override
+//                            public void onAnimationCancel(Animator animation) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onAnimationRepeat(Animator animation) {
+//
+//                            }
+//                        }).start();
+//            } else {
+//                actionBar.hide();
+//            }
+//        }
+//    }
+//
+//    void showActionBar(ActionBar actionBar){
+//        if (actionBar != null && !actionBar.isShowing()) {
+//            actionBar.show();
+//            if(toolbar != null) {
+//                toolbar.animate().translationY(0).alpha(1).setDuration(600L).start();
+//            }
+//        }
+//    }
 }

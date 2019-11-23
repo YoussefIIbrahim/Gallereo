@@ -1,5 +1,6 @@
 package com.example.youssefiibrahim.gallereo.view;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +12,21 @@ import android.os.SystemClock;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 
 import com.example.youssefiibrahim.gallereo.R;
@@ -29,6 +39,8 @@ public class VideoPlayActivity  extends AppCompatActivity {
     private Uri mVideoUri;
     private ImageButton mPlayPauseButton;
     private SurfaceView mSurfaceView;
+    private Toolbar toolbar;
+
 
     private MediaControllerCompat mController;
     private MediaControllerCompat.TransportControls mControllerTransportControls;
@@ -173,6 +185,7 @@ public class VideoPlayActivity  extends AppCompatActivity {
 
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,9 +193,32 @@ public class VideoPlayActivity  extends AppCompatActivity {
 
         mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton);
         mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
-
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        mSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (getSupportActionBar().isShowing()) {
+//                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        toolbar.animate().translationY(-toolbar.getBottom()).
+                                setInterpolator(new AccelerateInterpolator()).start();
+                        getSupportActionBar().hide();
+                    } else {
+//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        toolbar.animate().translationY(0).
+                                setInterpolator(new DecelerateInterpolator()).start();
+                        getSupportActionBar().show();
+                    }
+                    return true;
+                } else return false;
+            }
+        });
+        toolbar = (Toolbar)findViewById(R.id.toolbar1);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.toolbarColor));
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         Intent callingIntent = this.getIntent();
         if(callingIntent != null) {
@@ -196,6 +232,43 @@ public class VideoPlayActivity  extends AppCompatActivity {
         mController = new MediaControllerCompat(this, mSession);
         mControllerTransportControls = mController.getTransportControls();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.full_image_share, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.image_share_menu);
+        ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        shareActionProvider.setShareIntent(createShareIntent());
+        return true;
+    }
+
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/*");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, mVideoUri);
+        return shareIntent;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (getSupportActionBar().isShowing()) {
+//                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                toolbar.animate().translationY(-toolbar.getBottom()).
+                        setInterpolator(new AccelerateInterpolator()).start();
+                getSupportActionBar().hide();
+            } else {
+//                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                toolbar.animate().translationY(0).
+                        setInterpolator(new DecelerateInterpolator()).start();
+                getSupportActionBar().show();
+            }
+            return true;
+        } else return false;
     }
 
     public void playPauseClick(View view) {

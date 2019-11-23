@@ -29,6 +29,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.Toolbar;
 
 import com.example.youssefiibrahim.gallereo.R;
 
@@ -39,19 +40,25 @@ public class MainActivity extends AppCompatActivity
     private final static int MEDIASTORE_LOADER_ID = 0;
     private RecyclerView memberRecyclerView;
     private MediaStorageAdapter memberMediaStoreAdapter;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        toolbar = (Toolbar)findViewById(R.id.toolbar1);
+
+        toolbar.setTitleTextColor(getResources().getColor(R.color.toolbarColor));
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         memberRecyclerView = (RecyclerView) findViewById(R.id.thumbnailRecyclerView);
 
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         memberRecyclerView.setLayoutManager(gridLayoutManager);
-        int spacingInPixels = 15;
-        memberRecyclerView.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
 
         memberMediaStoreAdapter = new MediaStorageAdapter(this);
         memberRecyclerView.setAdapter(memberMediaStoreAdapter);
