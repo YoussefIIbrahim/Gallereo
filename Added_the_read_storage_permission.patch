@@ -1,0 +1,127 @@
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(revision bf3f906deea24fb9e2462563510f41674fd8114a)
++++ app/src/main/res/layout/activity_main.xml	(date 1573477827000)
+@@ -11,9 +11,4 @@
+ 
+     tools:context=".MainActivity">
+ 
+-    <TextView
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:text="Hello World!" />
+-
+ </RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision bf3f906deea24fb9e2462563510f41674fd8114a)
++++ app/src/main/AndroidManifest.xml	(date 1573477861000)
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     package="com.example.youssefiibrahim.gallereo">
+-
++    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+     <application
+         android:allowBackup="true"
+         android:icon="@mipmap/ic_launcher"
+Index: app/src/main/java/com/example/youssefiibrahim/gallereo/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/youssefiibrahim/gallereo/MainActivity.java	(revision bf3f906deea24fb9e2462563510f41674fd8114a)
++++ app/src/main/java/com/example/youssefiibrahim/gallereo/MainActivity.java	(date 1573479274000)
+@@ -1,13 +1,54 @@
+ package com.example.youssefiibrahim.gallereo;
+ 
++import android.Manifest;
++import android.content.pm.PackageManager;
++import android.os.Build;
++import android.support.annotation.NonNull;
++import android.support.v4.content.ContextCompat;
+ import android.support.v7.app.AppCompatActivity;
+ import android.os.Bundle;
++import android.widget.Toast;
+ 
+ public class MainActivity extends AppCompatActivity {
+ 
++    private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
++
++    @Override
++    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
++        switch (requestCode) {
++            case READ_EXTERNAL_STORAGE_PERMISSION_RESULT:
++                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
++                    //Call cursor loader
++                    Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
++                }
++                break;
++            default:
++                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
++
++        }
++    }
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
++        checkReadExternalStoragePermission();
++    }
++
++    private void checkReadExternalStoragePermission() {
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
++                    PackageManager.PERMISSION_GRANTED) {
++
++            } else {
++                if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
++                    Toast.makeText(this, "The app needs to view the images on the device.", Toast.LENGTH_SHORT).show();
++                }
++                requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
++                READ_EXTERNAL_STORAGE_PERMISSION_RESULT);
++            }
++        } else {
++
++        }
+     }
+ }
+Index: app/src/main/res/values/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/styles.xml	(revision bf3f906deea24fb9e2462563510f41674fd8114a)
++++ app/src/main/res/values/styles.xml	(date 1573477146000)
+@@ -1,7 +1,7 @@
+ <resources>
+ 
+     <!-- Base application theme. -->
+-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
++    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+         <!-- Customize your theme here. -->
+         <item name="colorPrimary">@color/colorPrimary</item>
+         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(date 1573470661000)
++++ .idea/vcs.xml	(date 1573470661000)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
