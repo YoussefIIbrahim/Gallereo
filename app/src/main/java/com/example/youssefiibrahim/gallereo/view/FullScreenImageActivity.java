@@ -22,12 +22,13 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.youssefiibrahim.gallereo.R;
 
 public class FullScreenImageActivity extends AppCompatActivity implements
-        View.OnLongClickListener {
+        View.OnLongClickListener, View.OnClickListener{
 
     private Uri mImageUri;
     private Toolbar toolbar;
@@ -41,23 +42,20 @@ public class FullScreenImageActivity extends AppCompatActivity implements
 
         ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
         fullScreenImageView.setOnLongClickListener(this);
-        fullScreenImageView.setOnTouchListener(new View.OnTouchListener() {
+        fullScreenImageView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (getSupportActionBar().isShowing()) {
+            public void onClick(View v) {
+                if (getSupportActionBar().isShowing()) {
 //                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                        toolbar.animate().translationY(-toolbar.getBottom()).
-                                setInterpolator(new AccelerateInterpolator()).start();
-                        getSupportActionBar().hide();
-                    } else {
+                    toolbar.animate().translationY(-toolbar.getBottom()).
+                            setInterpolator(new AccelerateInterpolator()).start();
+                    getSupportActionBar().hide();
+                } else {
 //                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                        toolbar.animate().translationY(0).
-                                setInterpolator(new DecelerateInterpolator()).start();
-                        getSupportActionBar().show();
-                    }
-                    return true;
-                } else return false;
+                    toolbar.animate().translationY(0).
+                            setInterpolator(new DecelerateInterpolator()).start();
+                    getSupportActionBar().show();
+                }
             }
         });
 
@@ -102,29 +100,13 @@ public class FullScreenImageActivity extends AppCompatActivity implements
 
     @Override
     public boolean onLongClick(View v) {
-
         Intent shareIntent = createShareIntent();
-        startActivity(Intent.createChooser(shareIntent, "send to"));
+        startActivity(Intent.createChooser(shareIntent, "Send To"));
         return true;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (getSupportActionBar().isShowing()) {
-//                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                toolbar.animate().translationY(-toolbar.getBottom()).
-                        setInterpolator(new AccelerateInterpolator()).start();
-                getSupportActionBar().hide();
-            } else {
-//                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                toolbar.animate().translationY(0).
-                        setInterpolator(new DecelerateInterpolator()).start();
-                getSupportActionBar().show();
-            }
-            return true;
-        } else return false;
-    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -134,6 +116,21 @@ public class FullScreenImageActivity extends AppCompatActivity implements
             this.finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (getSupportActionBar().isShowing()) {
+//                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            toolbar.animate().translationY(-toolbar.getBottom()).
+                    setInterpolator(new AccelerateInterpolator()).start();
+            getSupportActionBar().hide();
+        } else {
+//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            toolbar.animate().translationY(0).
+                    setInterpolator(new DecelerateInterpolator()).start();
+            getSupportActionBar().show();
+        }
     }
 
 //    void hideActionBar(final ActionBar actionBar){

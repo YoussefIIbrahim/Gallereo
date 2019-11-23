@@ -31,7 +31,7 @@ import android.widget.ImageButton;
 
 import com.example.youssefiibrahim.gallereo.R;
 
-public class VideoPlayActivity  extends AppCompatActivity {
+public class VideoPlayActivity  extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
 
     private static final String TAG = "VideoPlayActivity";
 
@@ -64,6 +64,8 @@ public class VideoPlayActivity  extends AppCompatActivity {
     };
     private PlaybackStateCompat.Builder mPBuilder;
     private MediaSessionCompat mSession;
+
+
     private class MediaSessionCallback extends MediaSessionCompat.Callback implements SurfaceHolder.Callback, MediaPlayer.OnCompletionListener,
             AudioManager.OnAudioFocusChangeListener {
 
@@ -193,23 +195,22 @@ public class VideoPlayActivity  extends AppCompatActivity {
 
         mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton);
         mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
-        mSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+        mSurfaceView.setOnLongClickListener(this);
+
+        mSurfaceView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (getSupportActionBar().isShowing()) {
+            public void onClick(View v) {
+                if (getSupportActionBar().isShowing()) {
 //                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                        toolbar.animate().translationY(-toolbar.getBottom()).
-                                setInterpolator(new AccelerateInterpolator()).start();
-                        getSupportActionBar().hide();
-                    } else {
+                    toolbar.animate().translationY(-toolbar.getBottom()).
+                            setInterpolator(new AccelerateInterpolator()).start();
+                    getSupportActionBar().hide();
+                } else {
 //                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                        toolbar.animate().translationY(0).
-                                setInterpolator(new DecelerateInterpolator()).start();
-                        getSupportActionBar().show();
-                    }
-                    return true;
-                } else return false;
+                    toolbar.animate().translationY(0).
+                            setInterpolator(new DecelerateInterpolator()).start();
+                    getSupportActionBar().show();
+                }
             }
         });
         toolbar = (Toolbar)findViewById(R.id.toolbar1);
@@ -254,21 +255,25 @@ public class VideoPlayActivity  extends AppCompatActivity {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (getSupportActionBar().isShowing()) {
-//                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                toolbar.animate().translationY(-toolbar.getBottom()).
-                        setInterpolator(new AccelerateInterpolator()).start();
-                getSupportActionBar().hide();
-            } else {
-//                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                toolbar.animate().translationY(0).
-                        setInterpolator(new DecelerateInterpolator()).start();
-                getSupportActionBar().show();
-            }
-            return true;
-        } else return false;
+    public void onClick(View v) {
+        if (getSupportActionBar().isShowing()) {
+//                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            toolbar.animate().translationY(-toolbar.getBottom()).
+                    setInterpolator(new AccelerateInterpolator()).start();
+            getSupportActionBar().hide();
+        } else {
+//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            toolbar.animate().translationY(0).
+                    setInterpolator(new DecelerateInterpolator()).start();
+            getSupportActionBar().show();
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        Intent shareIntent = createShareIntent();
+        startActivity(Intent.createChooser(shareIntent, "Send To"));
+        return true;
     }
 
     public void playPauseClick(View view) {
