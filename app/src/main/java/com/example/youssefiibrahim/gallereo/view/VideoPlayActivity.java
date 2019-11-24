@@ -9,6 +9,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -19,15 +21,13 @@ import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import com.example.youssefiibrahim.gallereo.R;
 
@@ -40,6 +40,8 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
     private ImageButton mPlayPauseButton;
     private SurfaceView mSurfaceView;
     private Toolbar toolbar;
+    private MenuItem mPlayPauseMenuItem;
+    private BottomNavigationView bottomNavigationView;
 
 
     private MediaControllerCompat mController;
@@ -51,13 +53,18 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
 
             switch (state.getState()) {
                 case PlaybackStateCompat.STATE_PLAYING:
-                    mPlayPauseButton.setImageResource(R.mipmap.ic_media_pause);
+                    mPlayPauseMenuItem.setIcon(android.R.drawable.ic_media_pause);
+                    mPlayPauseMenuItem.setTitle("Pause");
                     break;
                 case PlaybackStateCompat.STATE_PAUSED:
-                    mPlayPauseButton.setImageResource(R.mipmap.ic_media_play);
+                    mPlayPauseMenuItem.setIcon(android.R.drawable.ic_media_play);
+                    mPlayPauseMenuItem.setTitle("Play");
+
                     break;
                 case PlaybackStateCompat.STATE_STOPPED:
-                    mPlayPauseButton.setImageResource(R.mipmap.ic_media_play);
+                    mPlayPauseMenuItem.setIcon(android.R.drawable.ic_media_play);
+                    mPlayPauseMenuItem.setTitle("Play");
+
                     break;
             }
         }
@@ -193,33 +200,28 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
 
-        mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton);
         mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
-        mSurfaceView.setOnLongClickListener(this);
 
-        mSurfaceView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getSupportActionBar().isShowing()) {
-//                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    toolbar.animate().translationY(-toolbar.getBottom()).
-                            setInterpolator(new AccelerateInterpolator()).start();
-                    getSupportActionBar().hide();
-                } else {
-//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    toolbar.animate().translationY(0).
-                            setInterpolator(new DecelerateInterpolator()).start();
-                    getSupportActionBar().show();
-                }
-            }
-        });
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.video_relative_layout);
+        relativeLayout.setOnLongClickListener(this);
+        relativeLayout.setOnClickListener(this);
+
         toolbar = (Toolbar)findViewById(R.id.toolbar1);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.toolbarColor));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                playPauseClick(findViewById(R.id.video_relative_layout));
+                return true;
+            }
+        });
+        Menu menu = bottomNavigationView.getMenu();
+        mPlayPauseMenuItem = menu.findItem(R.id.videoPlayPauseMenuItem);
 
         Intent callingIntent = this.getIntent();
         if(callingIntent != null) {
@@ -261,12 +263,18 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
             toolbar.animate().translationY(-toolbar.getBottom()).
                     setInterpolator(new AccelerateInterpolator()).start();
             getSupportActionBar().hide();
-        } else {
+            bottomNavigationView.getMenu()
+                    .findItem(R.id.videoPlayPauseMenuItem)
+                    .setVisible(false);
+            } else {
 //                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             toolbar.animate().translationY(0).
                     setInterpolator(new DecelerateInterpolator()).start();
             getSupportActionBar().show();
-        }
+            bottomNavigationView.getMenu()
+                    .findItem(R.id.videoPlayPauseMenuItem)
+                    .setVisible(true);
+            }
     }
 
     @Override

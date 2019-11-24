@@ -22,6 +22,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -41,26 +42,12 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_full_screen_image);
 
         ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
-        fullScreenImageView.setOnLongClickListener(this);
-        fullScreenImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getSupportActionBar().isShowing()) {
-//                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    toolbar.animate().translationY(-toolbar.getBottom()).
-                            setInterpolator(new AccelerateInterpolator()).start();
-                    getSupportActionBar().hide();
-                } else {
-//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    toolbar.animate().translationY(0).
-                            setInterpolator(new DecelerateInterpolator()).start();
-                    getSupportActionBar().show();
-                }
-            }
-        });
+
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.full_screen_relative_layout);
+        relativeLayout.setOnLongClickListener(this);
+        relativeLayout.setOnClickListener(this);
 
         toolbar = (Toolbar)findViewById(R.id.toolbar1);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.toolbarColor));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -132,6 +119,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
             getSupportActionBar().show();
         }
     }
+
 
 //    void hideActionBar(final ActionBar actionBar){
 //        if (actionBar != null && actionBar.isShowing()) {
