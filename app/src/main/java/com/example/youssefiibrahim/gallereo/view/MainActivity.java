@@ -1,11 +1,9 @@
 package com.example.youssefiibrahim.gallereo.view;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -20,15 +18,9 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.support.v7.widget.SearchView;
 import android.widget.Toast;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.Toolbar;
 
 import com.example.youssefiibrahim.gallereo.R;

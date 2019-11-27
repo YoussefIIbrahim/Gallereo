@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
@@ -29,11 +30,18 @@ import com.bumptech.glide.Glide;
 import com.example.youssefiibrahim.gallereo.R;
 
 public class FullScreenImageActivity extends AppCompatActivity implements
-        View.OnLongClickListener, View.OnClickListener{
+        View.OnLongClickListener, View.OnClickListener {
 
     private Uri mImageUri;
     private Toolbar toolbar;
 
+    public Uri getmImageUri() {
+        return mImageUri;
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -47,7 +55,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         relativeLayout.setOnLongClickListener(this);
         relativeLayout.setOnClickListener(this);
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar1);
+        toolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -55,15 +63,15 @@ public class FullScreenImageActivity extends AppCompatActivity implements
 
 
         Intent callingActivityIntent = getIntent();
-        if(callingActivityIntent != null) {
+        if (callingActivityIntent != null) {
             mImageUri = callingActivityIntent.getData();
-            if(mImageUri != null && fullScreenImageView != null) {
+            if (mImageUri != null && fullScreenImageView != null) {
                 Glide.with(this)
                         .load(mImageUri)
                         .into(fullScreenImageView);
             }
         }
-        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -77,7 +85,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         return true;
     }
 
-
+    @VisibleForTesting
     private Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("image/*");
@@ -91,8 +99,6 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         startActivity(Intent.createChooser(shareIntent, "Send To"));
         return true;
     }
-
-
 
 
     @Override
@@ -119,45 +125,4 @@ public class FullScreenImageActivity extends AppCompatActivity implements
             getSupportActionBar().show();
         }
     }
-
-
-//    void hideActionBar(final ActionBar actionBar){
-//        if (actionBar != null && actionBar.isShowing()) {
-//            if(toolbar != null) {
-//                toolbar.animate().translationY(-212).alpha(0).setDuration(600L)
-//                        .setListener(new Animator.AnimatorListener() {
-//                            @Override
-//                            public void onAnimationStart(Animator animation) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onAnimationEnd(Animator animation) {
-//                                actionBar.hide();
-//                            }
-//
-//                            @Override
-//                            public void onAnimationCancel(Animator animation) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onAnimationRepeat(Animator animation) {
-//
-//                            }
-//                        }).start();
-//            } else {
-//                actionBar.hide();
-//            }
-//        }
-//    }
-//
-//    void showActionBar(ActionBar actionBar){
-//        if (actionBar != null && !actionBar.isShowing()) {
-//            actionBar.show();
-//            if(toolbar != null) {
-//                toolbar.animate().translationY(0).alpha(1).setDuration(600L).start();
-//            }
-//        }
-//    }
 }
