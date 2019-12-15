@@ -62,7 +62,7 @@ public class ProcessingTest{
         Bitmap actualBm = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         actualBm.eraseColor(Color.BLACK);
 
-        Bitmap expectedBm = Processing.getResizedBitmap(actualBm, 300, 300);
+        Bitmap expectedBm = Processing.getResizedBitmap(actualBm, 300);
 
         assert (expectedBm != null && expectedBm.getWidth() == 300 && expectedBm.getHeight() == 300);
     }
