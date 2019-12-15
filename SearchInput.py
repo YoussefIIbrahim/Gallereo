@@ -148,7 +148,6 @@ class TextRank4Keyword():
         """Print top number keywords"""
         node_weight = OrderedDict(sorted(self.node_weight.items(), key=lambda t: t[1], reverse=True))
         for i, (key, value) in enumerate(node_weight.items()):
-            print(key + ' - ' + str(value))
             if i > number:
                 break
 
@@ -211,8 +210,9 @@ class TextRank4Keyword():
 
 
 text = '''
-Child play flute.
+Child and dog are playing.
 '''
 tr4w = TextRank4Keyword()
+
 tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
 tr4w.get_keywords(10)
