@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "3429888413",
+    "firebase_url": "https://gallereo-40456.firebaseio.com",
+    "project_id": "gallereo-40456",
+    "storage_bucket": "gallereo-40456.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3429888413:android:fcd7111b50ff10d97b3f74",
+        "android_client_info": {
+          "package_name": "com.example.youssefiibrahim.gallereo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "3429888413-o0gb7lh33jdm518mrc0oc03id3rq4oqq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.youssefiibrahim.gallereo",
+            "certificate_hash": "5749a68be70b7a87b766f6d4cf526f4f6481d027"
+          }
+        },
+        {
+          "client_id": "3429888413-5l4eoeokd1vhkugpmkro33jnm690b426.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUgQDNu_77CFAzzSMbNORrMr1yongf9Cc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "3429888413-5l4eoeokd1vhkugpmkro33jnm690b426.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
