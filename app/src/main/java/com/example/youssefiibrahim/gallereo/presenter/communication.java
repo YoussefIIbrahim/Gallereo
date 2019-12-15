@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.youssefiibrahim.gallereo.model.ImageStructure;
+import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
+import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -61,5 +63,16 @@ public class communication {
         return responseCode;
     }
 
+
+    public static ResponseWrapper requestLabels(ImageStructuresWrapper wrapper) throws IOException {
+        String json = Processing.toJson(wrapper);
+        byte[] bts = new byte[10000];
+        Integer responseCode = sendHttpRequest(json, LABELER, "application/json", bts);
+        if (responseCode != 200) {
+            return null;
+        }
+        String response = new String(bts).trim();
+        return (ResponseWrapper) Processing.fromJson(response, ResponseWrapper.class);
+    }
 
 }
