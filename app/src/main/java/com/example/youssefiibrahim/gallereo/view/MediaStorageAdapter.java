@@ -1,6 +1,7 @@
 package com.example.youssefiibrahim.gallereo.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -8,30 +9,43 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.youssefiibrahim.gallereo.R;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> {
+public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> implements Filterable {
 
     private Cursor memberMediaStoreCursor;
     private final Activity memberActivity;
     private OnClickThumbListener mOnClickThumbListener;
+    private ArrayList<String> mImages = new ArrayList<>();
+    private Boolean searchMode;
+    private String TAG = "FROM MEDIASTORAGE ADAPTER: ";
+
 
     public interface OnClickThumbListener {
         void OnClickImage(Uri imageUri);
         void OnClickVideo(Uri videoUri);
     }
 
-    public MediaStorageAdapter(Activity memberActivity) {
+    public MediaStorageAdapter(Activity memberActivity, ArrayList<String> images, Boolean searchMode) {
         this.memberActivity = memberActivity;
         this.mOnClickThumbListener = (OnClickThumbListener)memberActivity;
+        this.mImages = images;
+        this.searchMode = searchMode;
 
     }
 
@@ -45,20 +59,37 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-//        Bitmap bitmap = getBitmapMediaStore(i);
-//        if (bitmap != null) {
-//            viewHolder.getMemberImageView().setImageBitmap(bitmap);
-//        }
-        Glide.with(memberActivity)
-                .load(getUriFromMediaStore(i))
-                .centerCrop()
-                .override(96, 96)
-                .into(viewHolder.getMemberImageView());
+        if (searchMode) {
+
+            Log.d(TAG, mImages.toString());
+            Glide.with(memberActivity)
+                    .asBitmap()
+                    .load(mImages.get(i))
+//                .apply(new RequestOptions()
+//                        .placeholder(R.mipmap.ic_launcher)
+//                        .fitCenter())
+                    .into(viewHolder.getMemberImageView());
+        } else {
+            Glide.with(memberActivity)
+                    .asBitmap()
+                    .load(getUriFromMediaStore(i))
+//                .apply(new RequestOptions()
+//                        .placeholder(R.mipmap.ic_launcher)
+//                        .fitCenter())
+                    .into(viewHolder.getMemberImageView());
+//                .centerCrop()
+//                .override(96, 96)
+//                .into(viewHolder.getMemberImageView());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return (memberMediaStoreCursor == null ? 0 : memberMediaStoreCursor.getCount());
+        if (searchMode) {
+            return mImages.size();
+        } else {
+            return (memberMediaStoreCursor == null ? 0 : memberMediaStoreCursor.getCount());
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -78,7 +109,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         @Override
         public void onClick(View v) {
             getOnClickUri(getAdapterPosition());
-
         }
     }
 
@@ -158,6 +188,65 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                 break;
             default:
         }
+
+    }
+
+    @Override
+    public Filter getFilter() {
+        return exampleFilter;
+    }
+
+    private Filter exampleFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            if (constraint == null || constraint.length() == 0) {
+                searchMode = false;
+            } else {
+                searchMode = true;
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = mImages;
+//            Context context = memberActivity;
+//            int duration = Toast.LENGTH_SHORT;
+//
+//            Toast toast = Toast.makeText(context, ('Y' + String.valueOf(constraint)), duration);
+//            toast.show();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            initImageBitmaps();
+//            searchMode = true;
+//            mImages.clear();
+//            mImages.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
+
+    private void initImageBitmaps(){
+        mImages = new ArrayList<>();
+
+        mImages.add("https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg");
+
+        mImages.add("https://i.redd.it/tpsnoz5bzo501.jpg");
+
+        mImages.add("https://i.redd.it/qn7f9oqu7o501.jpg");
+
+        mImages.add("https://i.redd.it/j6myfqglup501.jpg");
+
+        mImages.add("https://i.redd.it/0h2gm1ix6p501.jpg");
+
+        mImages.add("https://i.redd.it/k98uzl68eh501.jpg");
+
+        mImages.add("https://i.redd.it/glin0nwndo501.jpg");
+
+        mImages.add("https://i.redd.it/obx4zydshg601.jpg");
+
+        mImages.add("https://i.imgur.com/ZcLLrkY.jpg");
 
     }
 }
