@@ -117,13 +117,13 @@ class TextRank4Keyword():
         return token_pairs
 
     def symmetrize(self, a):
-        print(a)
-        print('-----')
-        print(a.T)
-        print('-----')
-        print(np.diag(a.diagonal()))
-        print('-----')
-        print(a + a.T - np.diag(a.diagonal()))
+        # print(a)
+        # print('-----')
+        # print(a.T)
+        # print('-----')
+        # print(np.diag(a.diagonal()))
+        # print('-----')
+        # print(a + a.T - np.diag(a.diagonal()))
         return a + a.T - np.diag(a.diagonal())
 
     def get_matrix(self, vocab, token_pairs):
@@ -147,9 +147,12 @@ class TextRank4Keyword():
     def get_keywords(self, number=10):
         """Print top number keywords"""
         node_weight = OrderedDict(sorted(self.node_weight.items(), key=lambda t: t[1], reverse=True))
+        ret = []
         for i, (key, value) in enumerate(node_weight.items()):
+            ret.append({'key' : key, 'value' : value})
             if i > number:
                 break
+        return ret
 
     def analyze(self, text,
                 candidate_pos=['NOUN', 'PROPN'],
@@ -215,4 +218,5 @@ Child and dog are playing.
 tr4w = TextRank4Keyword()
 
 tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
-tr4w.get_keywords(10)
+lst = tr4w.get_keywords(10)
+print(lst)
