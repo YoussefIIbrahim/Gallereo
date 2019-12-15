@@ -4,9 +4,8 @@ import android.support.annotation.Nullable;
 
 public class ImageStructure{
 
-    private final String IMG = "IMG";
-    private String id;
-    private String imageBase64;
+    private String id;  // FULL PATH to image
+    private String imageBase64; // Image encoded in base64
 
     public ImageStructure(String id, String imageBase64) {
         this.imageBase64 = imageBase64;

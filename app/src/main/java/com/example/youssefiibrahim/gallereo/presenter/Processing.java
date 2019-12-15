@@ -8,6 +8,8 @@ import android.util.Base64;
 
 import com.example.youssefiibrahim.gallereo.model.ImageStructure;
 
+import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
+import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
@@ -47,11 +49,21 @@ public class Processing {
         return resizedBitmap;
     }
 
-    public static String toJson(ImageStructure structure) {
-        return new Gson().toJson(structure);
+    public static String toJson(Object obj) {
+        return new Gson().toJson(obj);
     }
 
-    public static ImageStructure fromJson(String jsonString) {
-        return new Gson().fromJson(jsonString, ImageStructure.class);
+
+    public static Object fromJson(String jsonString, Class<?> cls) {
+        return new Gson().fromJson(jsonString, cls);
     }
+
+//    public static String toJson(ResponseWrapper responseWrapper) {
+//        return new Gson().toJson(responseWrapper);
+//    }
+
+
+//    public static ResponseWrapper fromJson(String jsonString) {
+//        return new Gson().fromJson(jsonString, ResponseWrapper.class);
+//    }
 }

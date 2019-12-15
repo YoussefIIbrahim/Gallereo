@@ -24,6 +24,7 @@ class TestCustomModel(unittest.TestCase):
         self.model.loadFiles()
 
         labels = self.model.predict('desert.jpg')
+        print('labels = ', labels)
         self.assertTrue(labels != None and len(labels) > 0)
 
 if __name__ == '__main__':
