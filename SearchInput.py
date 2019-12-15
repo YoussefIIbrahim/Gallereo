@@ -51,6 +51,7 @@ import spacy
 from nltk import word_tokenize, re
 from spacy.lang.en.stop_words import STOP_WORDS
 from nltk.stem import WordNetLemmatizer
+from flask import jsonify
 # from nltk.corpus import wordnet
 # from nltk.tag.stanford import StanfordNERTagger
 
@@ -152,7 +153,7 @@ class TextRank4Keyword():
             ret.append({'key' : key, 'value' : value})
             if i > number:
                 break
-        return ret
+        return jsonify({'pairs' : ret})
 
     def analyze(self, text,
                 candidate_pos=['NOUN', 'PROPN'],
@@ -211,12 +212,19 @@ class TextRank4Keyword():
         input_str = ' '.join(input_str)
         return input_str
 
+def handler(request):
+    content_type = request.headers['content-type']
+    text = ''
+    if content_type == 'text/plain':
+        print('Its text plain')
+        text = str(request.data.decode("utf-8") )
+    else:
+        raise ValueError("Content type is not text/plain")
+    text = '''
+    Child and dog are playing.
+    '''
+    tr4w = TextRank4Keyword()
 
-text = '''
-Child and dog are playing.
-'''
-tr4w = TextRank4Keyword()
-
-tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
-lst = tr4w.get_keywords(10)
-print(lst)
+    tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
+    lst = tr4w.get_keywords(10)
+    return lst
