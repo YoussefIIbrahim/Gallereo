@@ -117,13 +117,6 @@ class TextRank4Keyword():
         return token_pairs
 
     def symmetrize(self, a):
-        print(a)
-        print('-----')
-        print(a.T)
-        print('-----')
-        print(np.diag(a.diagonal()))
-        print('-----')
-        print(a + a.T - np.diag(a.diagonal()))
         return a + a.T - np.diag(a.diagonal())
 
     def get_matrix(self, vocab, token_pairs):
@@ -211,7 +204,7 @@ class TextRank4Keyword():
 
 
 text = '''
-Child play flute.
+I like watching football Saturday at night.
 '''
 tr4w = TextRank4Keyword()
 tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
