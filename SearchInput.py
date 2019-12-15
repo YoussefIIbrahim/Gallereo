@@ -58,6 +58,7 @@ from flask import jsonify
 
 
 
+tr4w = None
 
 class TextRank4Keyword():
     """Extract keywords from text"""
@@ -67,8 +68,11 @@ class TextRank4Keyword():
         self.min_diff = 1e-5  # convergence threshold
         self.steps = 10  # iteration steps
         self.node_weight = None  # save keywords and its weight
+        print('Before limmatizer')
         self.lemmatizer=WordNetLemmatizer()  # lemmatizer for cleaning data
+        print('Before loading')
         self.nlp = spacy.load('en_core_web_sm')
+        print('after loading')
 
         # self.st = StanfordNERTagger('stanford-ner/all.3class.distsim.crf.ser.gz', 'stanford-ner/stanford-ner.jar')
 
@@ -220,11 +224,11 @@ def handler(request):
         text = str(request.data.decode("utf-8") )
     else:
         raise ValueError("Content type is not text/plain")
-    text = '''
-    Child and dog are playing.
-    '''
-    tr4w = TextRank4Keyword()
-
+    print('text = ', text)
+    global tr4w
+    if tr4w == None:
+        tr4w = TextRank4Keyword()
+    print('finished analyzing')
     tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
     lst = tr4w.get_keywords(10)
     return lst
