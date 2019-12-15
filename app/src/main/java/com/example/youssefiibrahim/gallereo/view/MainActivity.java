@@ -1,6 +1,7 @@
 package com.example.youssefiibrahim.gallereo.view;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -16,7 +17,9 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.SearchView;
@@ -25,14 +28,22 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.youssefiibrahim.gallereo.R;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>, MediaStorageAdapter.OnClickThumbListener {
+
+    private static final String TAG = "MainActivity";
+
 
     private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
     private final static int MEDIASTORE_LOADER_ID = 0;
     private RecyclerView memberRecyclerView;
     private MediaStorageAdapter memberMediaStoreAdapter;
     private Toolbar toolbar;
+    private ArrayList<String> mImageUrls = new ArrayList<>();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +63,7 @@ public class MainActivity extends AppCompatActivity
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         memberRecyclerView.setLayoutManager(gridLayoutManager);
 
-        memberMediaStoreAdapter = new MediaStorageAdapter(this);
+        memberMediaStoreAdapter = new MediaStorageAdapter(this, null, false);
         memberRecyclerView.setAdapter(memberMediaStoreAdapter);
         checkReadExternalStoragePermission();
     }
@@ -67,11 +78,28 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
+//                Context context = getApplicationContext();
+//                int duration = Toast.LENGTH_SHORT;
+
+//                Toast toast = Toast.makeText(context, query, duration);
+//                toast.show();
+//                memberRecyclerView.invalidate();
+//                memberRecyclerView.setAdapter(null);
+//                initImageBitmaps();
+                memberMediaStoreAdapter.getFilter().filter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+//                Context context = getApplicationContext();
+//                int duration = Toast.LENGTH_SHORT;
+//
+//                Toast toast = Toast.makeText(context, newText, duration);
+//                toast.show();
+                memberMediaStoreAdapter.getFilter().filter(newText);
+
                 return false;
             }
         });
@@ -161,5 +189,38 @@ public class MainActivity extends AppCompatActivity
         Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
         videoPlayIntent.setData(videoUri);
         startActivity(videoPlayIntent);
+    }
+
+    private void initImageBitmaps(){
+        Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
+
+        mImageUrls.add("https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg");
+
+        mImageUrls.add("https://i.redd.it/tpsnoz5bzo501.jpg");
+
+        mImageUrls.add("https://i.redd.it/qn7f9oqu7o501.jpg");
+
+        mImageUrls.add("https://i.redd.it/j6myfqglup501.jpg");
+
+        mImageUrls.add("https://i.redd.it/0h2gm1ix6p501.jpg");
+
+        mImageUrls.add("https://i.redd.it/k98uzl68eh501.jpg");
+
+        mImageUrls.add("https://i.redd.it/glin0nwndo501.jpg");
+
+        mImageUrls.add("https://i.redd.it/obx4zydshg601.jpg");
+
+        mImageUrls.add("https://i.imgur.com/ZcLLrkY.jpg");
+
+        initRecyclerView();
+    }
+
+    private void initRecyclerView(){
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        memberRecyclerView.setLayoutManager(gridLayoutManager);
+
+        memberMediaStoreAdapter = new MediaStorageAdapter(this, null, true);
+        memberRecyclerView.setAdapter(memberMediaStoreAdapter);
+
     }
 }

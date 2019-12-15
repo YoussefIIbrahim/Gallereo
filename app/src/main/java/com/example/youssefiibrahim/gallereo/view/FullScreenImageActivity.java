@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.text.method.Touch;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -29,11 +30,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.youssefiibrahim.gallereo.R;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 public class FullScreenImageActivity extends AppCompatActivity implements
         View.OnLongClickListener, View.OnClickListener {
 
     private Uri mImageUri;
     private Toolbar toolbar;
+    private PhotoViewAttacher pAttacher;
+
 
     public Uri getmImageUri() {
         return mImageUri;
@@ -49,7 +54,11 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_image);
 
-        ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
+        TouchImageView fullScreenImageView = (TouchImageView) findViewById(R.id.fullScreenImageView);
+//        ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
+
+//        pAttacher = new PhotoViewAttacher(fullScreenImageView);
+//        pAttacher.update();
 
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.full_screen_relative_layout);
         relativeLayout.setOnLongClickListener(this);
@@ -70,6 +79,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
                         .load(mImageUri)
                         .into(fullScreenImageView);
             }
+//            pAttacher.update();
         }
     }
 
@@ -95,6 +105,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
 
     @Override
     public boolean onLongClick(View v) {
+//        Toast.makeText(this, findViewById(android.R.id.content).getId(), Toast.LENGTH_SHORT).show();
         Intent shareIntent = createShareIntent();
         startActivity(Intent.createChooser(shareIntent, "Send To"));
         return true;
@@ -125,4 +136,5 @@ public class FullScreenImageActivity extends AppCompatActivity implements
             getSupportActionBar().show();
         }
     }
+
 }
