@@ -10,7 +10,7 @@ from SearchInput import *
 
 class TestTextRank4Keyword(TestCase):
 
-    def test_sentence_segment(self):
+    def shouldSentenceSegment(self):
         test_nlp = spacy.load('en_core_web_sm')
         test_class = TextRank4Keyword()
         test_false_argument = ". / ] [ , hello in during this which 0 1223 I"
@@ -19,7 +19,7 @@ class TestTextRank4Keyword(TestCase):
         assert (len([item for sublist in actual_return_list for item in sublist]) == 0)
 
 
-    def test_get_vocab(self):
+    def shouldGetVocab(self):
         test_nlp = spacy.load('en_core_web_sm')
         test_class = TextRank4Keyword()
 
@@ -30,7 +30,7 @@ class TestTextRank4Keyword(TestCase):
         assert (len([i for i in list(actual_return_list.values()) if i != (range(0,4)).index(i)]) == 0)
 
 
-    def test_get_token_pairs(self):
+    def shouldGetTokenPairs(self):
         test_nlp = spacy.load('en_core_web_sm')
         test_class = TextRank4Keyword()
 
@@ -41,7 +41,7 @@ class TestTextRank4Keyword(TestCase):
         actual_return_list = test_class.get_token_pairs(4, test_sentences)
         assert (len([i for i, j in zip(actual_return_list, expected_output) if i != j]) == 0)
 
-    def test_symmetrize(self):
+    def shouldSymmetrize(self):
         test_nlp = spacy.load('en_core_web_sm')
         test_class = TextRank4Keyword()
 
@@ -50,7 +50,7 @@ class TestTextRank4Keyword(TestCase):
         actual_return_list = test_class.symmetrize(test_argument)
         assert (len([x for x in actual_return_list if x not in expected_output] + [x for x in expected_output if x not in actual_return_list]) == 0)
 
-    def test_cleanData(self):
+    def shouldCleanData(self):
         test_nlp = spacy.load('en_core_web_sm')
         test_class = TextRank4Keyword()
 
