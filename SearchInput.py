@@ -51,12 +51,14 @@ import spacy
 from nltk import word_tokenize, re
 from spacy.lang.en.stop_words import STOP_WORDS
 from nltk.stem import WordNetLemmatizer
+from flask import jsonify
 # from nltk.corpus import wordnet
 # from nltk.tag.stanford import StanfordNERTagger
 
 
 
 
+tr4w = None
 
 class TextRank4Keyword():
     """Extract keywords from text"""
@@ -66,8 +68,11 @@ class TextRank4Keyword():
         self.min_diff = 1e-5  # convergence threshold
         self.steps = 10  # iteration steps
         self.node_weight = None  # save keywords and its weight
+        print('Before limmatizer')
         self.lemmatizer=WordNetLemmatizer()  # lemmatizer for cleaning data
+        print('Before loading')
         self.nlp = spacy.load('en_core_web_sm')
+        print('after loading')
 
         # self.st = StanfordNERTagger('stanford-ner/all.3class.distsim.crf.ser.gz', 'stanford-ner/stanford-ner.jar')
 
@@ -117,6 +122,13 @@ class TextRank4Keyword():
         return token_pairs
 
     def symmetrize(self, a):
+        # print(a)
+        # print('-----')
+        # print(a.T)
+        # print('-----')
+        # print(np.diag(a.diagonal()))
+        # print('-----')
+        # print(a + a.T - np.diag(a.diagonal()))
         return a + a.T - np.diag(a.diagonal())
 
     def get_matrix(self, vocab, token_pairs):
@@ -140,10 +152,12 @@ class TextRank4Keyword():
     def get_keywords(self, number=10):
         """Print top number keywords"""
         node_weight = OrderedDict(sorted(self.node_weight.items(), key=lambda t: t[1], reverse=True))
+        ret = []
         for i, (key, value) in enumerate(node_weight.items()):
-            print(key + ' - ' + str(value))
+            ret.append({'key' : key, 'value' : value})
             if i > number:
                 break
+        return jsonify({'pairs' : ret})
 
     def analyze(self, text,
                 candidate_pos=['NOUN', 'PROPN'],
@@ -202,10 +216,19 @@ class TextRank4Keyword():
         input_str = ' '.join(input_str)
         return input_str
 
-
-text = '''
-I like watching football Saturday at night.
-'''
-tr4w = TextRank4Keyword()
-tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
-tr4w.get_keywords(10)
+def handler(request):
+    content_type = request.headers['content-type']
+    text = ''
+    if content_type == 'text/plain':
+        print('Its text plain')
+        text = str(request.data.decode("utf-8") )
+    else:
+        raise ValueError("Content type is not text/plain")
+    print('text = ', text)
+    global tr4w
+    if tr4w == None:
+        tr4w = TextRank4Keyword()
+    print('finished analyzing')
+    tr4w.analyze(text, candidate_pos = ['NOUN', 'PROPN', 'VERB', 'ADJ', 'ADV'], window_size=4, lower=False)
+    lst = tr4w.get_keywords(10)
+    return lst
