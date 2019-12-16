@@ -5,6 +5,9 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 
 public class ResponseWrapper {
+
+    public static ResponseWrapper singleton;
+
     public ArrayList<Response> responses;
 
     public ResponseWrapper(ArrayList<Response> responses) {
@@ -17,6 +20,11 @@ public class ResponseWrapper {
     public boolean add(Response response) {
         return this.responses.add(response);
     }
+
+    public boolean add(ResponseWrapper responseWrapper) {
+        return this.responses.addAll(responseWrapper.responses);
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         ResponseWrapper other = (ResponseWrapper)obj;

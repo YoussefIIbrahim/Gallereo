@@ -21,8 +21,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.youssefiibrahim.gallereo.R;
+import com.example.youssefiibrahim.gallereo.presenter.CoreAlgorithms;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     private final Activity memberActivity;
     private OnClickThumbListener mOnClickThumbListener;
     private ArrayList<String> mImages = new ArrayList<>();
+    private ArrayList<String> allPaths;
     private Boolean searchMode;
     private String TAG = "FROM MEDIASTORAGE ADAPTER: ";
 
@@ -41,12 +44,12 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         void OnClickVideo(Uri videoUri);
     }
 
-    public MediaStorageAdapter(Activity memberActivity, ArrayList<String> images, Boolean searchMode) {
+    public MediaStorageAdapter(Activity memberActivity, ArrayList<String> images, Boolean searchMode, ArrayList<String> allPaths) {
         this.memberActivity = memberActivity;
         this.mOnClickThumbListener = (OnClickThumbListener)memberActivity;
         this.mImages = images;
         this.searchMode = searchMode;
-
+        this.allPaths = allPaths;
     }
 
     @NonNull
@@ -204,6 +207,11 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                 searchMode = false;
             } else {
                 searchMode = true;
+                try {
+                    ArrayList<String> filteredImages = CoreAlgorithms.filterImages(constraint.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             FilterResults results = new FilterResults();

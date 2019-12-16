@@ -27,7 +27,13 @@ import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 import com.example.youssefiibrahim.gallereo.R;
+import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
+import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
+import com.example.youssefiibrahim.gallereo.presenter.DataRW;
+import com.example.youssefiibrahim.gallereo.presenter.communication;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -42,7 +48,7 @@ public class MainActivity extends AppCompatActivity
     private MediaStorageAdapter memberMediaStoreAdapter;
     private Toolbar toolbar;
     private ArrayList<String> mImageUrls = new ArrayList<>();
-
+    private ArrayList<String> allPaths;
 
 
     @Override
@@ -63,11 +69,32 @@ public class MainActivity extends AppCompatActivity
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         memberRecyclerView.setLayoutManager(gridLayoutManager);
 
-        memberMediaStoreAdapter = new MediaStorageAdapter(this, null, false);
+        try {
+            prepareData();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        memberMediaStoreAdapter = new MediaStorageAdapter(this, null, false, allPaths);
         memberRecyclerView.setAdapter(memberMediaStoreAdapter);
         checkReadExternalStoragePermission();
     }
 
+
+    private void prepareData() throws IOException {
+        DataRW.loadFileIntoMemory(this);
+
+        if (allPaths == null && isPermissionGranted()) {
+            allPaths = DataRW.getImagesPath(this);
+        }
+        if (ResponseWrapper.singleton != null) {
+            ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
+            ImageStructuresWrapper wrapper = DataRW.getImages(imagesToProcess);
+            DataRW.processAndSave(imagesToProcess, this);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -114,13 +141,23 @@ public class MainActivity extends AppCompatActivity
                     //Call cursor loader
                     Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
                     getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
-
+                    this.allPaths = DataRW.getImagesPath(this);
+                    try {
+                        DataRW.processAndSave(this.allPaths, this);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         }
+    }
+
+    private boolean isPermissionGranted() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED;
     }
 
     private void checkReadExternalStoragePermission() {
@@ -219,7 +256,7 @@ public class MainActivity extends AppCompatActivity
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         memberRecyclerView.setLayoutManager(gridLayoutManager);
 
-        memberMediaStoreAdapter = new MediaStorageAdapter(this, null, true);
+        memberMediaStoreAdapter = new MediaStorageAdapter(this, null, true, DataRW.getImagesPath(this));
         memberRecyclerView.setAdapter(memberMediaStoreAdapter);
 
     }

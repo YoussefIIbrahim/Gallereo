@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.support.test.rule.ActivityTestRule;
 
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
+import com.example.youssefiibrahim.gallereo.model.Response;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.example.youssefiibrahim.gallereo.view.FullScreenImageActivity;
 import com.example.youssefiibrahim.gallereo.view.MainActivity;
@@ -43,6 +44,22 @@ public class DataRWTest {
     }
 
     @Test
+    public void shouldFilterPaths() {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("Tareq"); list.add("Habbab"); list.add("Marwan"); list.add("Helwani");
+        ResponseWrapper.singleton = new ResponseWrapper();
+        ResponseWrapper.singleton.add(new Response("Marwan"));
+        ResponseWrapper.singleton.add(new Response("Tareq"));
+
+        ArrayList<String> actual = DataRW.filterPaths(list);
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("Habbab"); expected.add("Helwani");
+        System.out.println("expected = " + expected);
+        System.out.println("actual = " + actual);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void getImages() throws IOException {
         ImageStructuresWrapper wrapper = DataRW.getImages(mainActivity);
         String json = Processing.toJson(wrapper);
@@ -65,7 +82,7 @@ public class DataRWTest {
 
     @Test
     public void writeToFile() {
-        String expected = "Hello my friend";
+        String expected = "{\"responses\":[{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"1\"},{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"2\"}]}";
 
         DataRW.writeToFile(expected, mainActivity);
 
@@ -76,7 +93,7 @@ public class DataRWTest {
 
     @Test
     public void readFromFile() {
-        String expected = "Hello my friend";
+        String expected = "{\"responses\":[{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"1\"},{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"2\"}]}";
 
         DataRW.writeToFile(expected, mainActivity);
 

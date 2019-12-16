@@ -37,20 +37,7 @@ public class Processing {
         int minn = Math.min(width, height);
 
         float ratio = ((float) maxSize) / minn;
-//        float scaleWidth = ((float) newWidth) / width;
-//        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-//        matrix.postScale(scaleWidth, scaleHeight);
-
-
-        // "RECREATE" THE NEW BITMAP
-//        Bitmap resizedBitmap = Bitmap.createBitmap(
-//                bm, 0, 0, width, height, matrix, false);
-
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(bm, Math.round(ratio * width), Math.round(ratio * height), false);
-//        bm.recycle();
         return resizedBitmap;
     }
 
@@ -63,12 +50,5 @@ public class Processing {
         return new Gson().fromJson(jsonString, cls);
     }
 
-//    public static String toJson(ResponseWrapper responseWrapper) {
-//        return new Gson().toJson(responseWrapper);
-//    }
 
-
-//    public static ResponseWrapper fromJson(String jsonString) {
-//        return new Gson().fromJson(jsonString, ResponseWrapper.class);
-//    }
 }

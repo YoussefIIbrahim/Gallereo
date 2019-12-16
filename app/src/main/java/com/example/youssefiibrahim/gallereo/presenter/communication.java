@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.youssefiibrahim.gallereo.model.ImageStructure;
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
+import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,8 +29,8 @@ import java.net.URL;
 public class communication {
 
 
-//    private static FirebaseFunctions function = FirebaseFunctions.getInstance("europe-west1");
-    public static final String LABELER = "https://europe-west1-festive-athlete-249218.cloudfunctions.net/classifyer-2";
+    public static final String LABELER_URL = "https://europe-west1-festive-athlete-249218.cloudfunctions.net/classifyer-2";
+    public static final String HANDLER_URL = "https://us-central1-festive-athlete-249218.cloudfunctions.net/handler";
     public communication() {
 
     }
@@ -67,12 +68,22 @@ public class communication {
     public static ResponseWrapper requestLabels(ImageStructuresWrapper wrapper) throws IOException {
         String json = Processing.toJson(wrapper);
         byte[] bts = new byte[10000];
-        Integer responseCode = sendHttpRequest(json, LABELER, "application/json", bts);
+        Integer responseCode = sendHttpRequest(json, LABELER_URL, "application/json", bts);
         if (responseCode != 200) {
             return null;
         }
         String response = new String(bts).trim();
         return (ResponseWrapper) Processing.fromJson(response, ResponseWrapper.class);
+    }
+
+    public static PairWrapper processInput(String input) throws IOException {
+        byte[] bts = new byte[100];
+        Integer responseCode = sendHttpRequest(input, HANDLER_URL, "text/plain", bts);
+        if (responseCode != 200) {
+            return null;
+        }
+        String response = new String(bts).trim();
+        return (PairWrapper) Processing.fromJson(response, PairWrapper.class);
     }
 
 }

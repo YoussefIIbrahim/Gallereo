@@ -110,7 +110,7 @@ public class ProcessingTest{
         ImageStructuresWrapper fromJson = (ImageStructuresWrapper) Processing.fromJson(json, ImageStructuresWrapper.class);
         assertEquals(wrapper, fromJson);
 
-        json = "{\"responses\":[{\"data\":[{\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"1\"},{\"data\":[{\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"2\"}]}";
+        json = "{\"responses\":[{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"1\"},{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"2\"}]}";
         ResponseWrapper responseWrapper = (ResponseWrapper) Processing.fromJson(json, ResponseWrapper.class);
 
         String jsonString = Processing.toJson(responseWrapper);
@@ -122,9 +122,9 @@ public class ProcessingTest{
         Response response1 = new Response("1");
         Response response2 = new Response("2");
 
-        ResponseItem item = new ResponseItem("Natural environment", 0.9935060739517212);
+        ResponseItem item = new ResponseItem("Natural environment", 0.9935060739517212, true);
 
-        ResponseItem item2 = new ResponseItem("Desert", 0.9629292488098145);
+        ResponseItem item2 = new ResponseItem("Desert", 0.9629292488098145, true);
 
         response1.add(item);
         response1.add(item2);
