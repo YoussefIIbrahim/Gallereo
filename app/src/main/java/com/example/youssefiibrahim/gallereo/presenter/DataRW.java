@@ -58,6 +58,8 @@ public class DataRW {
     public static void processAndSave(ArrayList<String> paths, Context context) throws IOException {
         ImageStructuresWrapper wrapper = getImages(paths);
         ResponseWrapper responseWrapper = communication.requestLabels(wrapper);
+
+
         if (ResponseWrapper.singleton == null) {
             ResponseWrapper.singleton = new ResponseWrapper();
         }

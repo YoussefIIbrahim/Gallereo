@@ -83,6 +83,7 @@ public class communication {
             return null;
         }
         String response = new String(bts).trim();
+
         return (PairWrapper) Processing.fromJson(response, PairWrapper.class);
     }
 

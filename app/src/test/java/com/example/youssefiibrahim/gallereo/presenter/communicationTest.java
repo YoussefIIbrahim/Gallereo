@@ -43,7 +43,7 @@ public class communicationTest {
         String input = "Cat and DOG";
         PairWrapper pairWrapper = communication.processInput(input);
         assertEquals(2, pairWrapper.pairs.size());
-        assertEquals(new Integer(1), pairWrapper.pairs.get(0).weight);
+        assertEquals(new Double(1), pairWrapper.pairs.get(0).weight);
     }
 
     @Test

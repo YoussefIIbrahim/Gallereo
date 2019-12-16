@@ -21,7 +21,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.youssefiibrahim.gallereo.R;
+import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 import com.example.youssefiibrahim.gallereo.presenter.CoreAlgorithms;
+import com.example.youssefiibrahim.gallereo.presenter.SendHttpToHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -194,9 +196,17 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     }
 
+
+
+
     @Override
     public Filter getFilter() {
         return exampleFilter;
+    }
+
+    public void handler(ArrayList<String> paths) {
+        // SHOW IMAGES
+        
     }
 
     private Filter exampleFilter = new Filter() {
@@ -207,11 +217,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                 searchMode = false;
             } else {
                 searchMode = true;
-                try {
-                    ArrayList<String> filteredImages = CoreAlgorithms.filterImages(constraint.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
             }
 
             FilterResults results = new FilterResults();
