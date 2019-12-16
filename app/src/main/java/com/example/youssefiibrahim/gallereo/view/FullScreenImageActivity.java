@@ -30,14 +30,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.youssefiibrahim.gallereo.R;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class FullScreenImageActivity extends AppCompatActivity implements
         View.OnLongClickListener, View.OnClickListener {
 
     private Uri mImageUri;
     private Toolbar toolbar;
-    private PhotoViewAttacher pAttacher;
 
 
     public Uri getmImageUri() {
