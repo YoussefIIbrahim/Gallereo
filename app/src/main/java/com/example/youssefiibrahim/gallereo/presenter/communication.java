@@ -1,5 +1,7 @@
 package com.example.youssefiibrahim.gallereo.presenter;
 
+import android.util.Log;
+
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
 import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
@@ -7,6 +9,7 @@ import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -21,10 +24,10 @@ public class communication {
     public communication() {
 
     }
-    public static Integer sendHttpRequest(String jsonObject, String endpoint, String contentType, byte[] bts) throws IOException {
+    public static String sendHttpRequest(String jsonObject, String endpoint, String contentType, byte[] bts) throws IOException {
         URL url = new URL(endpoint);
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        urlConnection.setReadTimeout(10000);
+        urlConnection.setReadTimeout(1000000);
         urlConnection.setConnectTimeout(15000);
         urlConnection.setRequestMethod("POST");
         urlConnection.setRequestProperty("Content-Type", contentType);
@@ -34,6 +37,7 @@ public class communication {
 
 
         OutputStream out = null;
+        System.out.println("BEFORE CONNECT");
         urlConnection.connect();
         out = new BufferedOutputStream(urlConnection.getOutputStream());
 
@@ -43,33 +47,38 @@ public class communication {
         writer.close();
         out.close();
 
+        System.out.println("BEFORE RESPONSE CODE");
         Integer responseCode = urlConnection.getResponseCode();
-
+        System.out.println("RESPONSE CODE = " + responseCode);
+        System.out.println("BEFORE GET INPUT STREAM");
+        System.out.println("Error: "+ urlConnection.getErrorStream());
+        //System.out.println("INPUT: " + urlConnection.getInputStream());
+        InputStream in = urlConnection.getInputStream();
+        String response = new String();
+        int count = 0;
+        while ((count = in.read(bts)) > 0) { response += new String(bts, 0, count); }
         urlConnection.getInputStream().read(bts);
-        System.out.println("Response = " + new String(bts));
+
         urlConnection.disconnect();
-        return responseCode;
+        return response;
     }
 
 
     public static ResponseWrapper requestLabels(ImageStructuresWrapper wrapper) throws IOException {
+        System.out.println("WRAPPER = " + wrapper);
         String json = Processing.toJson(wrapper);
-        byte[] bts = new byte[10000];
-        Integer responseCode = sendHttpRequest(json, LABELER_URL, "application/json", bts);
-        if (responseCode != 200) {
-            return null;
-        }
-        String response = new String(bts).trim();
+        byte[] bts = new byte[100000];
+        System.out.println("JSON = " + json);
+        String response = sendHttpRequest(json, LABELER_URL, "application/json", bts).trim();
+
+        Log.d("LABELS: " , "T" +response);
         return (ResponseWrapper) Processing.fromJson(response, ResponseWrapper.class);
     }
 
     public static PairWrapper processInput(String input) throws IOException {
         byte[] bts = new byte[100];
-        Integer responseCode = sendHttpRequest(input, HANDLER_URL, "text/plain", bts);
-        if (responseCode != 200) {
-            return null;
-        }
-        String response = new String(bts).trim();
+        String response = sendHttpRequest(input, HANDLER_URL, "text/plain", bts).trim();
+
 
         return (PairWrapper) Processing.fromJson(response, PairWrapper.class);
     }

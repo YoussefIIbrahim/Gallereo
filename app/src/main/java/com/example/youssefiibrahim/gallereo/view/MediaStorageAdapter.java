@@ -70,7 +70,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         if (searchMode) {
             Glide.with(memberActivity)
                     .asBitmap()
-                    .load(mImages.get(contentIterator))
+                    .load(mImages.get(i))
                     .into(viewHolder.getMemberImageView());
             contentIterator += 1;
         } else {
@@ -201,6 +201,8 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     public void handler(ArrayList<String> paths) {
         // SHOW IMAGES
+        mImages = paths;
+        notifyDataSetChanged();
         System.out.println("PATHS = " + paths);
 
     }
@@ -214,7 +216,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
             } else {
                 searchMode = true;
                 contentIterator = 0;
-//                new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
                 new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
             }
 
@@ -225,11 +226,12 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            initImageBitmaps();
+//            new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
+//            initImageBitmaps();
 //            searchMode = true;
 //            mImages.clear();
 //            mImages.addAll((List) results.values);
-            notifyDataSetChanged();
+//            notifyDataSetChanged();
         }
     };
 

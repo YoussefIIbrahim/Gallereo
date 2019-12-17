@@ -30,7 +30,6 @@ public class CoreAlgorithms {
         ArrayList<Response> wanted = new ArrayList<>();
 
         for (Response response : ResponseWrapper.singleton.responses) {
-            System.out.println("RESPONSE ITEM = " + response.data.get(1));
             Double degreeOfSimilarity = 0.0;
             for (ResponseItem item : response.data) {
                 for (Pair pair : pairWrapper.pairs) {
