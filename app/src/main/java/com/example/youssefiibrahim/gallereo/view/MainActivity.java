@@ -155,11 +155,8 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
                     getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
                     this.allPaths = DataRW.getImagesPath(this);
-                    try {
-                        DataRW.processAndSave(this.allPaths, this);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    ProcessAndSaveThread thread = new ProcessAndSaveThread(this.allPaths, this);
+                    thread.start();
                 }
                 break;
             default:
