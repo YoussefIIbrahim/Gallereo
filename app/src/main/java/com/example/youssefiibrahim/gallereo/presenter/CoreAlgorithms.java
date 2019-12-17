@@ -12,6 +12,7 @@ import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.TreeSet;
 
 public class CoreAlgorithms {
 
@@ -50,6 +51,9 @@ public class CoreAlgorithms {
         for (Response response : wanted) {
             ret.add(response.id);
         }
+        TreeSet<String> tree = new TreeSet<>(ret);
+        ret = new ArrayList<>(tree);
+
         return ret;
     }
 
