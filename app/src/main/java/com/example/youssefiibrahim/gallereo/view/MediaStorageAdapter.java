@@ -39,6 +39,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     private ArrayList<String> mImages = new ArrayList<>();
     private ArrayList<String> allPaths;
     private Boolean searchMode;
+    private int contentIterator;
     private String TAG = "FROM MEDIASTORAGE ADAPTER: ";
 
 
@@ -53,6 +54,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         this.mImages = images;
         this.searchMode = searchMode;
         this.allPaths = allPaths;
+        this.contentIterator = 0;
     }
 
     @NonNull
@@ -66,26 +68,16 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         if (searchMode) {
-
-            Log.d(TAG, mImages.toString());
             Glide.with(memberActivity)
                     .asBitmap()
-                    .load(mImages.get(i))
-//                .apply(new RequestOptions()
-//                        .placeholder(R.mipmap.ic_launcher)
-//                        .fitCenter())
+                    .load(mImages.get(contentIterator))
                     .into(viewHolder.getMemberImageView());
+            contentIterator += 1;
         } else {
             Glide.with(memberActivity)
                     .asBitmap()
                     .load(getUriFromMediaStore(i))
-//                .apply(new RequestOptions()
-//                        .placeholder(R.mipmap.ic_launcher)
-//                        .fitCenter())
                     .into(viewHolder.getMemberImageView());
-//                .centerCrop()
-//                .override(96, 96)
-//                .into(viewHolder.getMemberImageView());
         }
     }
 
@@ -176,29 +168,31 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     }
 
     private void getOnClickUri(int position) {
-        int mediaTypeIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
-        int dataIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
+        if (searchMode) {
+            String authorities = memberActivity.getPackageName() + ".fileprovider";
+            Uri mediaUri = FileProvider.getUriForFile(memberActivity, authorities, new File(mImages.get(position)));
+            mOnClickThumbListener.OnClickImage(mediaUri);
+        } else {
+            int mediaTypeIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE);
+            int dataIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
 
-        memberMediaStoreCursor.moveToPosition(position);
-        String dataString = memberMediaStoreCursor.getString(dataIndex);
-        String authorities = memberActivity.getPackageName() + ".fileprovider";
-        Uri mediaUri = FileProvider.getUriForFile(memberActivity, authorities, new File(dataString));
-//        Uri mediaUri = Uri.parse("file://" + dataString);
+            memberMediaStoreCursor.moveToPosition(position);
+            String dataString = memberMediaStoreCursor.getString(dataIndex);
+            String authorities = memberActivity.getPackageName() + ".fileprovider";
+            Uri mediaUri = FileProvider.getUriForFile(memberActivity, authorities, new File(dataString));
 
-        switch (memberMediaStoreCursor.getInt(mediaTypeIndex)) {
-            case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
-                mOnClickThumbListener.OnClickImage(mediaUri);
-                break;
-            case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
-                mOnClickThumbListener.OnClickVideo(mediaUri);
-                break;
-            default:
+            switch (memberMediaStoreCursor.getInt(mediaTypeIndex)) {
+                case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
+                    mOnClickThumbListener.OnClickImage(mediaUri);
+                    break;
+                case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
+                    mOnClickThumbListener.OnClickVideo(mediaUri);
+                    break;
+                default:
+            }
         }
 
     }
-
-
-
 
     @Override
     public Filter getFilter() {
@@ -208,6 +202,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     public void handler(ArrayList<String> paths) {
         // SHOW IMAGES
         System.out.println("PATHS = " + paths);
+
     }
 
     private Filter exampleFilter = new Filter() {
@@ -218,16 +213,13 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                 searchMode = false;
             } else {
                 searchMode = true;
+                contentIterator = 0;
+//                new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
                 new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
             }
 
             FilterResults results = new FilterResults();
             results.values = mImages;
-//            Context context = memberActivity;
-//            int duration = Toast.LENGTH_SHORT;
-//
-//            Toast toast = Toast.makeText(context, ('Y' + String.valueOf(constraint)), duration);
-//            toast.show();
             return results;
         }
 
@@ -245,23 +237,26 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     private void initImageBitmaps(){
         mImages = new ArrayList<>();
 
-        mImages.add("https://c1.staticflickr.com/5/4636/25316407448_de5fbf183d_o.jpg");
+        mImages.add("/storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20191108-WA0020.jpg");
+        mImages.add("/storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20191108-WA0020.jpg");
+        mImages.add("/storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20191108-WA0020.jpg");
+        mImages.add("/storage/emulated/0/DCIM/Camera/20191216_215937.jpg");
 
-        mImages.add("https://i.redd.it/tpsnoz5bzo501.jpg");
-
-        mImages.add("https://i.redd.it/qn7f9oqu7o501.jpg");
-
-        mImages.add("https://i.redd.it/j6myfqglup501.jpg");
-
-        mImages.add("https://i.redd.it/0h2gm1ix6p501.jpg");
-
-        mImages.add("https://i.redd.it/k98uzl68eh501.jpg");
-
-        mImages.add("https://i.redd.it/glin0nwndo501.jpg");
-
-        mImages.add("https://i.redd.it/obx4zydshg601.jpg");
-
-        mImages.add("https://i.imgur.com/ZcLLrkY.jpg");
+//        mImages.add("https://i.redd.it/tpsnoz5bzo501.jpg");
+//
+//        mImages.add("https://i.redd.it/qn7f9oqu7o501.jpg");
+//
+//        mImages.add("https://i.redd.it/j6myfqglup501.jpg");
+//
+//        mImages.add("https://i.redd.it/0h2gm1ix6p501.jpg");
+//
+//        mImages.add("https://i.redd.it/k98uzl68eh501.jpg");
+//
+//        mImages.add("https://i.redd.it/glin0nwndo501.jpg");
+//
+//        mImages.add("https://i.redd.it/obx4zydshg601.jpg");
+//
+//        mImages.add("https://i.imgur.com/ZcLLrkY.jpg");
 
     }
 }
