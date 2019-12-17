@@ -96,6 +96,12 @@ public class MainActivity extends AppCompatActivity
             System.out.println("imagesToProcess = " + imagesToProcess);
             ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
             thread.start();
+        } else {
+            ArrayList<String> imagesToProcess = DataRW.getImagesPath(this); //DataRW.filterPaths(allPaths);
+            ImageStructuresWrapper wrapper = DataRW.getImages(imagesToProcess);
+            System.out.println("imagesToProcess = " + imagesToProcess);
+            ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
+            thread.start();
         }
     }
 
