@@ -15,9 +15,16 @@ public class CoreAlgorithms {
 
         ArrayList<String> ret = new ArrayList<>();
 
-        PairWrapper processedInput = communication.processInput(input);
-        ResponseWrapper responseWrapper = ResponseWrapper.singleton;
+//        PairWrapper processedInput = communication.processInput(input);
+//        ResponseWrapper responseWrapper = ResponseWrapper.singleton;
 
+        return ret;
+    }
+
+    public static ArrayList<String> filterImages(PairWrapper pairWrapper) {
+        ArrayList<String> ret = new ArrayList<>();
+        ret.add("Hello ");
+        ret.add("Tareq");
         return ret;
     }
 

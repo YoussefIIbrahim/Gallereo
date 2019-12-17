@@ -30,6 +30,7 @@ import com.example.youssefiibrahim.gallereo.R;
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.example.youssefiibrahim.gallereo.presenter.DataRW;
+import com.example.youssefiibrahim.gallereo.presenter.ProcessAndSaveThread;
 import com.example.youssefiibrahim.gallereo.presenter.communication;
 
 import java.io.FileNotFoundException;
@@ -92,7 +93,9 @@ public class MainActivity extends AppCompatActivity
         if (ResponseWrapper.singleton != null) {
             ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
             ImageStructuresWrapper wrapper = DataRW.getImages(imagesToProcess);
-            DataRW.processAndSave(imagesToProcess, this);
+            System.out.println("imagesToProcess = " + imagesToProcess);
+            ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
+            thread.start();
         }
     }
 

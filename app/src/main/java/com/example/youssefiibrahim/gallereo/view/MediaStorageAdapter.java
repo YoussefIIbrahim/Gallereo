@@ -7,9 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.FileProvider;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +21,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.youssefiibrahim.gallereo.R;
+import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 import com.example.youssefiibrahim.gallereo.presenter.CoreAlgorithms;
+import com.example.youssefiibrahim.gallereo.presenter.SendHttpToHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,6 @@ import java.util.List;
 public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> implements Filterable {
 
     private Cursor memberMediaStoreCursor;
-    private Cursor fitlerMemberMediaStoreCursor;
     private final Activity memberActivity;
     private OnClickThumbListener mOnClickThumbListener;
     private ArrayList<String> mImages = new ArrayList<>();
@@ -191,11 +190,17 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                 default:
             }
         }
+
     }
 
     @Override
     public Filter getFilter() {
         return exampleFilter;
+    }
+
+    public void handler(ArrayList<String> paths) {
+        // SHOW IMAGES
+
     }
 
     private Filter exampleFilter = new Filter() {
@@ -207,6 +212,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                 searchMode = true;
                 contentIterator = 0;
 //                new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
+                new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
             }
 
             FilterResults results = new FilterResults();
