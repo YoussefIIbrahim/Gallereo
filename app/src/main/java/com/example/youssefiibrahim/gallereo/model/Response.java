@@ -5,18 +5,21 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 
-public class Response {
+public class Response implements Comparable{
 
     public String id;
     public ArrayList<ResponseItem> data;
+    public Double degreeOfSimilarity;
 
     public Response(String id, ArrayList<ResponseItem> data) {
         this.id = id;
         this.data = data;
+        this.degreeOfSimilarity = 0.0;
     }
     public Response(String id) {
         this.id = id;
         this.data = new ArrayList<ResponseItem>();
+        this.degreeOfSimilarity = 0.0;
     }
 
     public boolean add(ResponseItem item) {
@@ -45,5 +48,11 @@ public class Response {
     public String toString() {
         System.out.println("CALLING TOSTRING");
         return id + "," + data.toString();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Response other = (Response)o;
+        return other.degreeOfSimilarity.compareTo(this.degreeOfSimilarity);
     }
 }

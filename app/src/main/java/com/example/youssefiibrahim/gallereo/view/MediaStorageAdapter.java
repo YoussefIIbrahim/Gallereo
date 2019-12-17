@@ -23,6 +23,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.youssefiibrahim.gallereo.R;
 import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 import com.example.youssefiibrahim.gallereo.presenter.CoreAlgorithms;
+import com.example.youssefiibrahim.gallereo.presenter.DataRW;
 import com.example.youssefiibrahim.gallereo.presenter.SendHttpToHandler;
 
 import java.io.File;
@@ -206,7 +207,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     public void handler(ArrayList<String> paths) {
         // SHOW IMAGES
-        
+        System.out.println("PATHS = " + paths);
     }
 
     private Filter exampleFilter = new Filter() {
