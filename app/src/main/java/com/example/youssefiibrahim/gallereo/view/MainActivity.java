@@ -125,6 +125,10 @@ public class MainActivity extends AppCompatActivity
 //
 //                Toast toast = Toast.makeText(context, newText, duration);
 //                toast.show();
+//                if (Integer.parseInt(String.valueOf(searchView.getQuery().length())) == 0) {
+//                    memberMediaStoreAdapter.getFilter().filter(newText);
+//                }
+
                 memberMediaStoreAdapter.getFilter().filter(newText);
 
                 return false;
