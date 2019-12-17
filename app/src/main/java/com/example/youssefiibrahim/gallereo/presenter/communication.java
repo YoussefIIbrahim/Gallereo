@@ -1,20 +1,8 @@
 package com.example.youssefiibrahim.gallereo.presenter;
 
-import android.support.annotation.NonNull;
-import android.util.Log;
-
-import com.example.youssefiibrahim.gallereo.model.ImageStructure;
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
 import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
-
-import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -22,7 +10,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 
