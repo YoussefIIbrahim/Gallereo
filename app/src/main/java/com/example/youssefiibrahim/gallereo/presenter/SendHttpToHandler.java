@@ -40,6 +40,7 @@ public class SendHttpToHandler extends AsyncTask<String, String, PairWrapper> {
 
 
     protected void onPostExecute(PairWrapper pairWrapper) {
+
         ArrayList<String> filteredImages = CoreAlgorithms.filterImages(pairWrapper);
         this.mediaStorageAdapter.handler(filteredImages);
     }
