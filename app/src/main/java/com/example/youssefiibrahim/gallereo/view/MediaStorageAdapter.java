@@ -83,7 +83,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     @Override
     public int getItemCount() {
-        if (searchMode) {
+        if (searchMode && mImages != null) {
             return mImages.size();
         } else {
             return (memberMediaStoreCursor == null ? 0 : memberMediaStoreCursor.getCount());
@@ -213,12 +213,13 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
             if (constraint == null || constraint.length() == 0) {
                 searchMode = false;
+                notifyDataSetChanged();
             } else {
                 searchMode = true;
                 contentIterator = 0;
                 new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
             }
-
+            System.out.println("NO HTTP REQUEST: " + searchMode);
             FilterResults results = new FilterResults();
             results.values = mImages;
             return results;
