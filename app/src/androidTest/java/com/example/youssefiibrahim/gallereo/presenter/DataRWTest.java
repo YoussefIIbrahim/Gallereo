@@ -60,20 +60,14 @@ public class DataRWTest {
     }
 
     @Test
-    public void getImages() throws IOException {
+    public void shouldGetImages() throws IOException {
         ImageStructuresWrapper wrapper = DataRW.getImages(mainActivity);
         String json = Processing.toJson(wrapper);
         assertTrue(wrapper != null);
-//        ArrayList<String> all = DataRW.getImagesPath(mainActivity);
-//        System.out.println("PATHS = " + all);
-//        System.out.println("JSON = " + json);
-//
-//        ResponseWrapper responseWrapper = communication.requestLabels(wrapper);
-//        System.out.println("RESPONSE = " + Processing.toJson(responseWrapper));
     }
 
     @Test
-    public void getImagesUri() throws FileNotFoundException {
+    public void shouldGetImagesUri() throws FileNotFoundException {
         ArrayList<String> all = DataRW.getImagesPath(mainActivity);
         assertTrue(!all.isEmpty());
 
@@ -81,7 +75,7 @@ public class DataRWTest {
 
 
     @Test
-    public void writeToFile() {
+    public void shouldWriteToFile() {
         String expected = "{\"responses\":[{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"1\"},{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"2\"}]}";
 
         DataRW.writeToFile(expected, mainActivity);
@@ -92,7 +86,7 @@ public class DataRWTest {
     }
 
     @Test
-    public void readFromFile() {
+    public void shouldReadFromFile() {
         String expected = "{\"responses\":[{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"1\"},{\"data\":[{\"isProcessed\":true,\"label\":\"Natural environment\",\"score\":0.9935060739517212},{\"isProcessed\":true,\"label\":\"Desert\",\"score\":0.9629292488098145}],\"id\":\"2\"}]}";
 
         DataRW.writeToFile(expected, mainActivity);
