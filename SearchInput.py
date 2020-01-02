@@ -51,10 +51,10 @@ import spacy
 from nltk import word_tokenize, re
 from spacy.lang.en.stop_words import STOP_WORDS
 from nltk.stem import WordNetLemmatizer
+from nltk.corpus.reader import WordNetError
 from flask import jsonify
 # from nltk.corpus import wordnet
 # from nltk.tag.stanford import StanfordNERTagger
-
 
 
 
@@ -177,6 +177,9 @@ class TextRank4Keyword():
         # Filter sentences
         sentences = self.sentence_segment(doc, candidate_pos, lower)  # list of list of words
 
+        # Augment Data
+        sentences = self.addSynonyms(sentences)
+
         # Build vocabulary
         vocab = self.get_vocab(sentences)
 
@@ -215,6 +218,23 @@ class TextRank4Keyword():
         input_str = [i for i in input_str if len(i) > 2]
         input_str = ' '.join(input_str)
         return input_str
+
+    def addSynonyms(self, sentences):
+        from nltk.corpus import wordnet
+        for i in range(len(sentences)):
+
+            for j in range(len(sentences[i])):
+                for syn in wordnet.synsets(sentences[i][j]):
+                    for l in syn.lemmas():
+                        try:
+                            w1 = wordnet.synset(sentences[i][j] + '.n.01')
+                            w2 = wordnet.synset(l.name() + '.n.01')
+                        except WordNetError:
+                            continue
+                        if wordnet.synset(l.name() + '.n.01'):
+                            if (w1.wup_similarity(w2) > 0.5) and (l.name() not in sentences[i]):
+                                sentences[i].append(l.name())
+        return sentences
 
 def handler(request):
     content_type = request.headers['content-type']
