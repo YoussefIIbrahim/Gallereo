@@ -67,21 +67,6 @@ public class ProcessingTest{
         assert (expectedBm != null && expectedBm.getWidth() == 300 && expectedBm.getHeight() == 300);
     }
 
-//    @Test
-//    public void shouldToJson() {
-//        ImageStructure structure = new ImageStructure(null, "base64");
-//        String json = Processing.toJson(structure);
-//        assertEquals("{\"IMG\":\"IMG\",\"imageBase64\":\"base64\"}", json);
-//    }
-//
-//
-//    @Test
-//    public void shouldFromJson() {
-//        String json = "{\"IMG\":\"IMG\",\"imageBase64\":\"base64\"}";
-//        ImageStructure expectedStructure = new ImageStructure(null, "base64");
-//        ImageStructure actualStructure = Processing.fromJson(json);
-//        assertEquals(expectedStructure, actualStructure);
-//    }
 
     @Test
     public void shouldToJsonWrapper() {

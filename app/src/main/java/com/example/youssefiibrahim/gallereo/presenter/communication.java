@@ -65,10 +65,8 @@ public class communication {
 
 
     public static ResponseWrapper requestLabels(ImageStructuresWrapper wrapper) throws IOException {
-        System.out.println("WRAPPER = " + wrapper);
         String json = Processing.toJson(wrapper);
         byte[] bts = new byte[100000];
-        System.out.println("JSON = " + json);
         String response = sendHttpRequest(json, LABELER_URL, "application/json", bts).trim();
 
         Log.d("LABELS: " , "T" +response);
