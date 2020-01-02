@@ -92,13 +92,13 @@ public class MainActivity extends AppCompatActivity
         }
         if (isPermissionGranted()) {
             if (ResponseWrapper.singleton != null) {
-                ArrayList<String> imagesToProcess = DataRW.getImagesPath(this); //DataRW.filterPaths(allPaths);
+                ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
                 ImageStructuresWrapper wrapper = DataRW.getImages(imagesToProcess);
                 System.out.println("imagesToProcess = " + imagesToProcess);
                 ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
                 thread.start();
             } else {
-                ArrayList<String> imagesToProcess = DataRW.getImagesPath(this); //DataRW.filterPaths(allPaths);
+                ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
                 ImageStructuresWrapper wrapper = DataRW.getImages(imagesToProcess);
                 System.out.println("imagesToProcess = " + imagesToProcess);
                 ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
