@@ -50,8 +50,12 @@ public class communication {
         System.out.println("BEFORE RESPONSE CODE");
         Integer responseCode = urlConnection.getResponseCode();
         System.out.println("RESPONSE CODE = " + responseCode);
+
         System.out.println("BEFORE GET INPUT STREAM");
         System.out.println("Error: "+ urlConnection.getErrorStream());
+        if (responseCode != 200) {
+            throw new IOException("Response code is not 200");
+        }
         //System.out.println("INPUT: " + urlConnection.getInputStream());
         InputStream in = urlConnection.getInputStream();
         String response = new String();
@@ -66,7 +70,8 @@ public class communication {
 
     public static ResponseWrapper requestLabels(ImageStructuresWrapper wrapper) throws IOException {
         String json = Processing.toJson(wrapper);
-        byte[] bts = new byte[100000];
+        System.out.println("SIZE OF JSON = " + json.length());
+        byte[] bts = new byte[10000];
         String response = sendHttpRequest(json, LABELER_URL, "application/json", bts).trim();
 
         Log.d("LABELS: " , "T" +response);

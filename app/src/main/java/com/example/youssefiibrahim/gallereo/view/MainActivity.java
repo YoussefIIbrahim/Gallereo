@@ -10,6 +10,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
@@ -35,6 +36,8 @@ import com.example.youssefiibrahim.gallereo.presenter.communication;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -91,19 +94,11 @@ public class MainActivity extends AppCompatActivity
             allPaths = DataRW.getImagesPath(this);
         }
         if (isPermissionGranted()) {
-            if (ResponseWrapper.singleton != null) {
-                ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
-                ImageStructuresWrapper wrapper = DataRW.getImages(imagesToProcess);
-                System.out.println("imagesToProcess = " + imagesToProcess);
-                ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
-                thread.start();
-            } else {
-                ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
-                ImageStructuresWrapper wrapper = DataRW.getImages(imagesToProcess);
-                System.out.println("imagesToProcess = " + imagesToProcess);
-                ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
-                thread.start();
-            }
+
+            ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
+            System.out.println("imagesToProcess = " + imagesToProcess);
+            ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
+            thread.start();
         }
 
     }
@@ -157,9 +152,14 @@ public class MainActivity extends AppCompatActivity
                     //Call cursor loader
                     Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
                     getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
-                    this.allPaths = DataRW.getImagesPath(this);
-                    ProcessAndSaveThread thread = new ProcessAndSaveThread(this.allPaths, this);
-                    thread.start();
+                    try {
+                        prepareData();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+//                    this.allPaths = DataRW.getImagesPath(this);
+//                    ProcessAndSaveThread thread = new ProcessAndSaveThread(this.allPaths, this);
+//                    thread.start();
                 }
                 break;
             default:

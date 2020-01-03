@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
 
@@ -24,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeSet;
@@ -31,35 +35,51 @@ import java.util.TreeSet;
 public class DataRW {
     public static final String PATH = "labels.json";
     public static final Integer WIDTH = 300;
+    private static final int BATCH_SIZE = 20;
 
-
+    /**
+     *
+     * @param allPaths all images paths
+     * @return the paths of images which are not processed
+     */
     public static ArrayList<String> filterPaths(ArrayList<String> allPaths) {
-        TreeSet<String> tree = new TreeSet<String>();
-        ArrayList<String> filtered = new ArrayList<>();
-        for (Response response : ResponseWrapper.singleton.responses) {
-            tree.add(response.id);
-        }
 
-        for (String path : allPaths) {
-            if (!tree.contains(path)) {
-                filtered.add(path);
+        if (ResponseWrapper.singleton == null) {
+            return allPaths;
+        } else {
+            TreeSet<String> tree = new TreeSet<String>();
+            ArrayList<String> filtered = new ArrayList<>();
+            for (Response response : ResponseWrapper.singleton.responses) {
+                tree.add(response.id);
             }
+
+            for (String path : allPaths) {
+                if (!tree.contains(path)) {
+                    filtered.add(path);
+                }
+            }
+            return filtered;
         }
-        return filtered;
     }
 
     public static void loadFileIntoMemory(Context context) {
         String content = readFromFile(context);
         if (!content.isEmpty()) {
             ResponseWrapper.singleton = (ResponseWrapper) Processing.fromJson(content, ResponseWrapper.class);
+            System.out.println("FILE READ " + content);
         }
     }
 
     public static void processAndSave(ArrayList<String> paths, Context context) throws IOException {
-        ImageStructuresWrapper wrapper = getImages(paths);
-        ResponseWrapper responseWrapper = communication.requestLabels(wrapper);
+        ArrayList<ImageStructuresWrapper> wrappers = getImages(paths);
 
+        System.out.println("STARTED REQUESTING LABELS");
+        ResponseWrapper responseWrapper = new ResponseWrapper();
 
+        for (ImageStructuresWrapper imageStructuresWrapper : wrappers) {
+            responseWrapper.add(communication.requestLabels(imageStructuresWrapper));
+        }
+        System.out.println("FINISHED REQUESTING LABELS");
         if (ResponseWrapper.singleton == null) {
             ResponseWrapper.singleton = new ResponseWrapper();
         }
@@ -74,6 +94,7 @@ public class DataRW {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(PATH, Context.MODE_PRIVATE));
             outputStreamWriter.write(data);
             outputStreamWriter.close();
+            System.out.println("LABELS.JSON has been written");
         }
         catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
@@ -110,30 +131,54 @@ public class DataRW {
         return ret;
     }
 
-    public static ImageStructuresWrapper getImages(ArrayList<String> files) throws FileNotFoundException {
+    public static ArrayList<ImageStructuresWrapper> getImages(ArrayList<String> files) throws FileNotFoundException {
 
-        ImageStructuresWrapper ret = new ImageStructuresWrapper();
+        ArrayList<ImageStructuresWrapper> ret = new ArrayList<>();
+        ImageStructuresWrapper imageWrapper = new ImageStructuresWrapper();
+        System.out.println("Started reading images " + files.size());
+        Instant start = Instant.now();
+        for (int i = 0; i < files.size(); i++) {
+            String file = files.get(i);
 
-        for (String file : files) {
-            File f = new File(file);
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            // Get bitmap dimensions before reading...
+            opts.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file, opts);
+            int width = opts.outWidth;
+            int height = opts.outHeight;
+            int largerSide = Math.max(width, height);
+            opts.inJustDecodeBounds = false; // This time it's for real!
+            int sampleSize = 1; // Calculate your sampleSize here
+            opts.inSampleSize = sampleSize;
+            Bitmap b = BitmapFactory.decodeFile(file, opts);
+
             Bitmap resizedBitmap = null;
             if(b.getHeight() > WIDTH && b.getWidth() > WIDTH) {
                 resizedBitmap = Processing.getResizedBitmap(b, WIDTH);
-                System.out.println("WIDTH = " + resizedBitmap.getWidth() + " , HEIGHT = " + resizedBitmap.getHeight());
-
             }
 
             String imageEncoded = Processing.encodeToBase64(resizedBitmap == null ? b : resizedBitmap, Bitmap.CompressFormat.JPEG, 100);
-            ret.add(new ImageStructure(f.getAbsolutePath(), imageEncoded));
+            imageWrapper.add(new ImageStructure(file, imageEncoded));
+
+            if (i % BATCH_SIZE == 0) {
+                ret.add(imageWrapper);
+                imageWrapper = new ImageStructuresWrapper();
+            } else if (files.size() - i < BATCH_SIZE) {
+                ret.add(imageWrapper);
+            }
         }
+
+        Instant end = Instant.now();
+        Duration timeElapsed = Duration.between(start, end);
+        System.out.println("Time taken: "+ timeElapsed.toMillis() +" milliseconds");
+        System.out.println("Finished reading images " + ret.size());
         return ret;
     }
 
-    public static ImageStructuresWrapper getImages(Activity activity) throws FileNotFoundException {
-        ArrayList<String> files = getImagesPath(activity);
-        return getImages(files);
-    }
+//    public static ImageStructuresWrapper getImages(Activity activity) throws FileNotFoundException {
+//        ArrayList<String> files = getImagesPath(activity);
+//        return getImages(files);
+//    }
 
 
     public static ArrayList<String> getImagesPath(Activity activity) {
