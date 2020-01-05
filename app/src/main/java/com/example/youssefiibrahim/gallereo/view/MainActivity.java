@@ -31,6 +31,7 @@ import com.example.youssefiibrahim.gallereo.R;
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.example.youssefiibrahim.gallereo.presenter.DataRW;
+import com.example.youssefiibrahim.gallereo.presenter.DecodeImages;
 import com.example.youssefiibrahim.gallereo.presenter.ProcessAndSaveThread;
 import com.example.youssefiibrahim.gallereo.presenter.communication;
 
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private void prepareData() throws IOException {
+
         DataRW.loadFileIntoMemory(this);
 
         if (allPaths == null && isPermissionGranted()) {
@@ -97,10 +99,19 @@ public class MainActivity extends AppCompatActivity
 
             ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
             System.out.println("imagesToProcess = " + imagesToProcess);
-            ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
-            thread.start();
+            if (!imagesToProcess.isEmpty()) {
+                createThreads(imagesToProcess);
+            }
+//            ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
+//            thread.start();
         }
 
+    }
+
+    private void createThreads(ArrayList<String> paths) {
+//        ProcessAndSaveThread thread = new ProcessAndSaveThread(paths, this);
+//        thread.start();
+        new DecodeImages(this).execute(paths);
     }
 
     @Override

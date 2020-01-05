@@ -19,11 +19,9 @@ public class ProcessAndSaveThread  extends Thread{
     }
 
     public void run() {
-        System.out.println("THREAD STARTED RUNNING");
         try {
             DataRW.processAndSave(paths, context);
         } catch (IOException e) {
-            System.out.println("Thread failed " + e.toString());
             Log.e("Exception", "Thread failed " + e.toString());
             e.printStackTrace();
         }

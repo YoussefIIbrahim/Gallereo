@@ -16,17 +16,12 @@ import java.util.TreeSet;
 
 public class CoreAlgorithms {
 
-    public static ArrayList<String> filterImages(String input) throws IOException {
-
-        ArrayList<String> ret = new ArrayList<>();
-
-//        PairWrapper processedInput = communication.processInput(input);
-//        ResponseWrapper responseWrapper = ResponseWrapper.singleton;
-
-        return ret;
-    }
-
     public static ArrayList<String> filterImages(PairWrapper pairWrapper) {
+
+        if (ResponseWrapper.singleton == null || ResponseWrapper.singleton.responses == null) {
+            return new ArrayList<String>();
+        }
+
         ArrayList<String> ret = new ArrayList<>();
         ArrayList<Response> wanted = new ArrayList<>();
 
@@ -34,7 +29,7 @@ public class CoreAlgorithms {
             Double degreeOfSimilarity = 0.0;
             for (ResponseItem item : response.data) {
                 for (Pair pair : pairWrapper.pairs) {
-                    if (pair.word.equals(item.label)) {
+                    if (pair.word.contains(item.label)) {
                         degreeOfSimilarity += pair.weight * item.score;
                     }
                 }

@@ -59,12 +59,12 @@ public class DataRWTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void shouldGetImages() throws IOException {
-        ImageStructuresWrapper wrapper = DataRW.getImages(mainActivity);
-        String json = Processing.toJson(wrapper);
-        assertTrue(wrapper != null);
-    }
+//    @Test
+//    public void shouldGetImages() throws IOException {
+//        ImageStructuresWrapper wrapper = DataRW.getImages(mainActivity);
+//        String json = Processing.toJson(wrapper);
+//        assertTrue(wrapper != null);
+//    }
 
     @Test
     public void shouldGetImagesUri() throws FileNotFoundException {

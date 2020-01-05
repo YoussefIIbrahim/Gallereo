@@ -89,6 +89,25 @@ public class DataRW {
         writeToFile(json, context);
     }
 
+    public static void processAndSave2(ArrayList<ImageStructuresWrapper> wrappers, Context context) throws IOException {
+        System.out.println("STARTED REQUESTING LABELS");
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        for (ImageStructuresWrapper imageStructuresWrapper : wrappers) {
+
+            responseWrapper.add(communication.requestLabels(imageStructuresWrapper));
+        }
+
+        System.out.println("FINISHED REQUESTING LABELS");
+        if (ResponseWrapper.singleton == null) {
+            ResponseWrapper.singleton = new ResponseWrapper();
+        }
+        ResponseWrapper.singleton.add(responseWrapper);
+        // now commit to device
+        String json = Processing.toJson(ResponseWrapper.singleton);
+        writeToFile(json, context);
+    }
+
     public static void writeToFile(String data, Context context) {
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(PATH, Context.MODE_PRIVATE));
@@ -160,12 +179,13 @@ public class DataRW {
             String imageEncoded = Processing.encodeToBase64(resizedBitmap == null ? b : resizedBitmap, Bitmap.CompressFormat.JPEG, 100);
             imageWrapper.add(new ImageStructure(file, imageEncoded));
 
-            if (i % BATCH_SIZE == 0) {
+            if ((i+1) % BATCH_SIZE == 0) {
                 ret.add(imageWrapper);
                 imageWrapper = new ImageStructuresWrapper();
-            } else if (files.size() - i < BATCH_SIZE) {
-                ret.add(imageWrapper);
             }
+        }
+        if (!imageWrapper.imageStructures.isEmpty()) {
+            ret.add(imageWrapper);
         }
 
         Instant end = Instant.now();

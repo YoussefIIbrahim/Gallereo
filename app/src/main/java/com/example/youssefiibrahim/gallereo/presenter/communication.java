@@ -51,10 +51,10 @@ public class communication {
         Integer responseCode = urlConnection.getResponseCode();
         System.out.println("RESPONSE CODE = " + responseCode);
 
-        System.out.println("BEFORE GET INPUT STREAM");
         System.out.println("Error: "+ urlConnection.getErrorStream());
         if (responseCode != 200) {
-            throw new IOException("Response code is not 200");
+            Log.e("ResponseCode", "response code is " + responseCode);
+            return "";
         }
         //System.out.println("INPUT: " + urlConnection.getInputStream());
         InputStream in = urlConnection.getInputStream();
@@ -75,6 +75,9 @@ public class communication {
         String response = sendHttpRequest(json, LABELER_URL, "application/json", bts).trim();
 
         Log.d("LABELS: " , "T" +response);
+        if (response.isEmpty()) {
+            return null;
+        }
         return (ResponseWrapper) Processing.fromJson(response, ResponseWrapper.class);
     }
 
