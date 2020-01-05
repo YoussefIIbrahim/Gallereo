@@ -29,6 +29,7 @@ public class CoreAlgorithms {
             Double degreeOfSimilarity = 0.0;
             for (ResponseItem item : response.data) {
                 for (Pair pair : pairWrapper.pairs) {
+                    if (pair.key == null || item.label == null) continue;
                     String word = pair.key.toLowerCase();
                     String[] labels = item.label.toLowerCase().split("\\s+");
                     for (String label : labels) {
