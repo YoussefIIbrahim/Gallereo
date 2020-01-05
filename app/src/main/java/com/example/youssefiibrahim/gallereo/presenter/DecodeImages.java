@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<ImageStructuresWrapper>> {
 
     private Context context;
-    private static final int WIDTH = 1500;
+    private static final int WIDTH = 1000;
     private static final int BATCH_SIZE = 5;
 
     public DecodeImages(Context context) {
@@ -39,12 +39,11 @@ public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<I
             // Get bitmap dimensions before reading...
             opts.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(file, opts);
+
             int width = opts.outWidth;
             int height = opts.outHeight;
-            int largerSide = Math.max(width, height);
+            int minimum = Math.min(width, height);
             opts.inJustDecodeBounds = false; // This time it's for real!
-            int sampleSize = 1; // Calculate your sampleSize here
-            opts.inSampleSize = sampleSize;
             Bitmap b = BitmapFactory.decodeFile(file, opts);
 
             Bitmap resizedBitmap = null;
