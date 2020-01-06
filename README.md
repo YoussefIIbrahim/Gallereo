@@ -10,6 +10,7 @@
 
 
 **Project Description**
+
 The main purpose of this application is to provide a service for all Androidsystem users that would make the image search easier and better.
 Currently, the image search is done in many different ways and only recently the idea of searching based on object detection in images was introduced.
 However, in this application, the natural language processing algorithms are applied to provide better results and higher chances of finding relevant images.
