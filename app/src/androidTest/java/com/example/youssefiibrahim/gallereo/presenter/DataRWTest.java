@@ -50,6 +50,7 @@ public class DataRWTest {
         ResponseWrapper.singleton = new ResponseWrapper();
         ResponseWrapper.singleton.add(new Response("Marwan"));
         ResponseWrapper.singleton.add(new Response("Tareq"));
+        ResponseWrapper.singleton.add(new Response("Soso"));
 
         ArrayList<String> actual = DataRW.filterPaths(list);
         ArrayList<String> expected = new ArrayList<>();
@@ -57,6 +58,7 @@ public class DataRWTest {
         System.out.println("expected = " + expected);
         System.out.println("actual = " + actual);
         assertEquals(expected, actual);
+        assertEquals(2, ResponseWrapper.singleton.responses.size());
     }
 
 //    @Test

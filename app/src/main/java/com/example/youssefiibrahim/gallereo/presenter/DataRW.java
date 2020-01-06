@@ -47,18 +47,39 @@ public class DataRW {
         if (ResponseWrapper.singleton == null) {
             return allPaths;
         } else {
-            TreeSet<String> tree = new TreeSet<String>();
-            ArrayList<String> filtered = new ArrayList<>();
+            TreeSet<String> appStoredPathsTree = new TreeSet<>();
+            TreeSet<String> allPathsTree = new TreeSet<>(allPaths);
+            ArrayList<String> filtered;
+            ArrayList<String> toDelete;
             for (Response response : ResponseWrapper.singleton.responses) {
-                tree.add(response.id);
+                appStoredPathsTree.add(response.id);
             }
 
-            for (String path : allPaths) {
-                if (!tree.contains(path)) {
-                    filtered.add(path);
-                }
-            }
+            filtered = filterTwoLists(allPathsTree, appStoredPathsTree);
+            toDelete = filterTwoLists(appStoredPathsTree, allPathsTree);
+            TreeSet<String> toDeleteTree = new TreeSet<>(toDelete);
+            deleteRedundantPaths(toDeleteTree);
+
             return filtered;
+        }
+    }
+
+    private static ArrayList<String> filterTwoLists(TreeSet<String> in, TreeSet<String> out) {
+        ArrayList<String> ret = new ArrayList<>();
+        for (String s : in) {
+            if (!out.contains(s)) {
+                ret.add(s);
+            }
+        }
+        return ret;
+    }
+
+    private static void deleteRedundantPaths(TreeSet<String> redundantPaths) {
+        for (int i = 0 ; i < ResponseWrapper.singleton.responses.size() ; ++i) {
+            if (redundantPaths.contains(ResponseWrapper.singleton.responses.get(i).id)) {
+                ResponseWrapper.singleton.responses.remove(i);
+                --i;
+            }
         }
     }
 
