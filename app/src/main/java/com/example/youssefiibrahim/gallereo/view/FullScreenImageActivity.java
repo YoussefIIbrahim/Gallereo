@@ -28,6 +28,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.youssefiibrahim.gallereo.R;
 
 
@@ -73,11 +76,17 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         if (callingActivityIntent != null) {
             mImageUri = callingActivityIntent.getData();
             if (mImageUri != null && fullScreenImageView != null) {
+
+                RequestOptions options = new RequestOptions();
+                options.fitCenter();
+                options.format(DecodeFormat.PREFER_ARGB_8888);
+                options.override(Target.SIZE_ORIGINAL);
+
                 Glide.with(this)
                         .load(mImageUri)
+                        .apply(options)
                         .into(fullScreenImageView);
             }
-//            pAttacher.update();
         }
     }
 
