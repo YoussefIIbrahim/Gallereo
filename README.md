@@ -22,7 +22,9 @@ Therefore, the extension of the system is also considered to provide the possibi
 
 **System Requirements**
 1. The system requires a stable internet connection of at least 10 Mbps.
+
 2. The system shall run on Android devices with the following specifications:
+
 (a) Operation System:≥Android (8.0) Oreo operating system.
 (b) RAM:≥8 GB RAM
 
