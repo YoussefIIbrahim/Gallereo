@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class ProcessImagesAndSave extends AsyncTask<ImageStructuresWrapper, Void, String> {
 
     private Context context;
-
+    private static int counter = 0;
     public ProcessImagesAndSave(Context context) {
         this.context = context;
     }
@@ -21,9 +21,15 @@ public class ProcessImagesAndSave extends AsyncTask<ImageStructuresWrapper, Void
     @Override
     protected String doInBackground(ImageStructuresWrapper... imageStructuresWrappers) {
         ImageStructuresWrapper imageStructuresWrapper = imageStructuresWrappers[0];
+
         try {
+
             ResponseWrapper responseWrapper = communication.requestLabels(imageStructuresWrapper);
-            System.out.println("RESPONSE ARRIVED " + responseWrapper.toString());
+
+            if (responseWrapper == null) {
+                return null;
+            }
+
             if (ResponseWrapper.singleton == null) {
                 ResponseWrapper.singleton = new ResponseWrapper();
             }
@@ -44,11 +50,15 @@ public class ProcessImagesAndSave extends AsyncTask<ImageStructuresWrapper, Void
                     DataRW.writeToFile(newFileContent, this.context);
                     System.out.println("FILE WAS EMPTY");
                 }
+                this.counter++;
+                System.out.println("FINISHED PROCESSING " + this.counter);
             }
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+        imageStructuresWrapper = null;
+
         return null;
     }
 }

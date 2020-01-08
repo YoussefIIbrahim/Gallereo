@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.Semaphore;
 
 
 public class communication {
@@ -21,6 +22,9 @@ public class communication {
 
     public static final String LABELER_URL = "https://europe-west1-festive-athlete-249218.cloudfunctions.net/classifyer-2";
     public static final String HANDLER_URL = "https://europe-west1-festive-athlete-249218.cloudfunctions.net/handler";
+    private static String toSendString;
+    private static Semaphore available = new Semaphore(1, true);
+
     public communication() {
 
     }
@@ -46,6 +50,7 @@ public class communication {
         writer.flush();
         writer.close();
         out.close();
+        available.release();
 
         System.out.println("BEFORE RESPONSE CODE");
         Integer responseCode = urlConnection.getResponseCode();
@@ -68,11 +73,21 @@ public class communication {
     }
 
 
-    public static ResponseWrapper requestLabels(ImageStructuresWrapper wrapper) throws IOException {
-        String json = Processing.toJson(wrapper);
-        System.out.println("SIZE OF JSON = " + json.length());
+    public static ResponseWrapper requestLabels(ImageStructuresWrapper wrapper) throws IOException, InterruptedException {
+        available.acquire();
+        while (true) {
+            try{
+                toSendString = Processing.toJson(wrapper);
+            } catch (OutOfMemoryError e) {
+                System.err.println(e.getMessage());
+                Thread.sleep(500);
+                continue;
+            }
+            break;
+        }
+        System.out.println("SIZE OF JSON = " + toSendString.length());
         byte[] bts = new byte[10000];
-        String response = sendHttpRequest(json, LABELER_URL, "application/json", bts).trim();
+        String response = sendHttpRequest(toSendString, LABELER_URL, "application/json", bts).trim();
 
         Log.d("LABELS: " , "T" +response);
         if (response.isEmpty()) {

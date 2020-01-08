@@ -40,28 +40,41 @@ public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<I
             opts.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(file, opts);
 
-            int width = opts.outWidth;
-            int height = opts.outHeight;
-            int minimum = Math.min(width, height);
             opts.inJustDecodeBounds = false; // This time it's for real!
             Bitmap b = BitmapFactory.decodeFile(file, opts);
 
             Bitmap resizedBitmap = null;
 
             if(b.getHeight() > WIDTH && b.getWidth() > WIDTH) {
-//                System.out.println(b.getAllocationByteCount() + ", " + b.getByteCount() + ", " + b.getRowBytes());
-//                System.out.println("HEIGHT = " + b.getHeight() + ", WIDTH = " + b.getWidth());
                 resizedBitmap = Processing.getResizedBitmap(b, WIDTH);
-//                System.out.println(resizedBitmap.getAllocationByteCount() + ", " + resizedBitmap.getByteCount() + ", " + resizedBitmap.getRowBytes());
-//                System.out.println("HEIGHT = " + resizedBitmap.getHeight() + ", WIDTH = " + resizedBitmap.getWidth());
+            }
+            if (resizedBitmap != null) {
+                b = null;
+            }
+            String imageEncoded;
+            while (true) {
+                try{
+                    imageEncoded = Processing.encodeToBase64(resizedBitmap == null ? b : resizedBitmap, Bitmap.CompressFormat.JPEG, 100);
+
+                } catch (OutOfMemoryError e) {
+                    System.err.println(e.getMessage());
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    continue;
+                }
+                break;
             }
 
-            String imageEncoded = Processing.encodeToBase64(resizedBitmap == null ? b : resizedBitmap, Bitmap.CompressFormat.JPEG, 100);
             imageWrapper.add(new ImageStructure(file, imageEncoded));
 
             if ((i+1) % BATCH_SIZE == 0) {
-                ret.add(imageWrapper);
+                ProcessImagesAndSave thread = new ProcessImagesAndSave(this.context);
+                thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageWrapper);
                 imageWrapper = new ImageStructuresWrapper();
+                System.out.println("Thread started " + i);
             }
         }
         if (!imageWrapper.imageStructures.isEmpty()) {
@@ -77,12 +90,15 @@ public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<I
 
 
     protected void onPostExecute(ArrayList<ImageStructuresWrapper> imageStructuresWrappers) {
+//
+//        for (int i = 0; i < imageStructuresWrappers.size() ; ++i) {
+//            ProcessImagesAndSave thread = new ProcessImagesAndSave(this.context);
+//            thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageStructuresWrappers.get(i));
+//            System.out.println("NEW THREAD STARTED " + i);
+//
+//            break;
+//        }
 
-        for (ImageStructuresWrapper wrapper : imageStructuresWrappers) {
-            ProcessImagesAndSave thread = new ProcessImagesAndSave(this.context);
-            thread.execute(wrapper);
-            System.out.println("NEW THREAD STARTED");
-        }
     }
 
 }

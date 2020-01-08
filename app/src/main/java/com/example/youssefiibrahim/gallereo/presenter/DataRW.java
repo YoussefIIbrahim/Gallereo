@@ -91,7 +91,7 @@ public class DataRW {
         }
     }
 
-    public static void processAndSave(ArrayList<String> paths, Context context) throws IOException {
+    public static void processAndSave(ArrayList<String> paths, Context context) throws IOException, InterruptedException {
         ArrayList<ImageStructuresWrapper> wrappers = getImages(paths);
 
         System.out.println("STARTED REQUESTING LABELS");
@@ -110,7 +110,7 @@ public class DataRW {
         writeToFile(json, context);
     }
 
-    public static void processAndSave2(ArrayList<ImageStructuresWrapper> wrappers, Context context) throws IOException {
+    public static void processAndSave2(ArrayList<ImageStructuresWrapper> wrappers, Context context) throws IOException, InterruptedException {
         System.out.println("STARTED REQUESTING LABELS");
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
