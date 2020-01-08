@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
@@ -139,6 +141,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
                 mPBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                         mMediaPlayer.getCurrentPosition(), 1.0f, SystemClock.elapsedRealtime());
                 mSession.setPlaybackState(mPBuilder.build());
+                handleAspectRatio(mSurfaceView, mMediaPlayer);
                 mMediaPlayer.start();
             }
         }
@@ -150,7 +153,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
                     mMediaPlayer.getCurrentPosition(), 1.0f, SystemClock.elapsedRealtime());
             mSession.setPlaybackState(mPBuilder.build());
             mAudioManager.abandonAudioFocus(this);
-            unregisterReceiver(mAudioBecommingNoisy);
+            LocalBroadcastManager.getInstance(this.mContext).unregisterReceiver(mAudioBecommingNoisy);
         }
 
         @Override
@@ -342,5 +345,29 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
             this.finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void handleAspectRatio(View surfaceView, MediaPlayer mediaPlayer) {
+        int surfaceView_Width = surfaceView.getWidth();
+        int surfaceView_Height = surfaceView.getHeight();
+
+        float video_Width = mediaPlayer.getVideoWidth();
+        float video_Height = mediaPlayer.getVideoHeight();
+
+        float ratio_width = surfaceView_Width/video_Width;
+        float ratio_height = surfaceView_Height/video_Height;
+        float aspectratio = video_Width/video_Height;
+
+        ViewGroup.LayoutParams layoutParams = surfaceView.getLayoutParams();
+
+        if (ratio_width > ratio_height){
+            layoutParams.width = (int) (surfaceView_Height * aspectratio);
+            layoutParams.height = surfaceView_Height;
+        }else{
+            layoutParams.width = surfaceView_Width;
+            layoutParams.height = (int) (surfaceView_Width / aspectratio);
+        }
+
+        surfaceView.setLayoutParams(layoutParams);
     }
 }
