@@ -20,7 +20,7 @@ public class communication {
 
 
     public static final String LABELER_URL = "https://europe-west1-festive-athlete-249218.cloudfunctions.net/classifyer-2";
-    public static final String HANDLER_URL = "https://us-central1-festive-athlete-249218.cloudfunctions.net/handler";
+    public static final String HANDLER_URL = "https://europe-west1-festive-athlete-249218.cloudfunctions.net/handler";
     public communication() {
 
     }

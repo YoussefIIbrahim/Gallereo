@@ -18,7 +18,7 @@ public class CoreAlgorithms {
 
     public static ArrayList<String> filterImages(PairWrapper pairWrapper) {
 
-        if (ResponseWrapper.singleton == null || ResponseWrapper.singleton.responses == null) {
+        if (ResponseWrapper.singleton == null || ResponseWrapper.singleton.responses == null || pairWrapper == null || pairWrapper.pairs == null) {
             return new ArrayList<String>();
         }
 

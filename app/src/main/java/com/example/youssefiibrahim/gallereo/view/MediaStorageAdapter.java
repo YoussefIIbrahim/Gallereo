@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.youssefiibrahim.gallereo.R;
 import com.example.youssefiibrahim.gallereo.model.PairWrapper;
@@ -26,13 +28,16 @@ import com.example.youssefiibrahim.gallereo.presenter.CoreAlgorithms;
 import com.example.youssefiibrahim.gallereo.presenter.DataRW;
 import com.example.youssefiibrahim.gallereo.presenter.SendHttpToHandler;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> implements Filterable {
 
+    private static final int PRELOAD_WIDTH = 300;
     private Cursor memberMediaStoreCursor;
     private final Activity memberActivity;
     private OnClickThumbListener mOnClickThumbListener;
@@ -68,15 +73,20 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         if (searchMode) {
+
             Glide.with(memberActivity)
                     .asBitmap()
                     .load(mImages.get(i))
                     .into(viewHolder.getMemberImageView());
             contentIterator += 1;
         } else {
+            RequestOptions myOptions = new RequestOptions()
+                    .fitCenter()
+                    .override(PRELOAD_WIDTH , PRELOAD_WIDTH);
             Glide.with(memberActivity)
                     .asBitmap()
                     .load(getUriFromMediaStore(i))
+                    .apply(myOptions)
                     .into(viewHolder.getMemberImageView());
         }
     }
