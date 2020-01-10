@@ -47,6 +47,13 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     private int contentIterator;
     private String TAG = "FROM MEDIASTORAGE ADAPTER: ";
 
+    public Cursor getMemberMediaStoreCursor() {
+        return memberMediaStoreCursor;
+    }
+
+    public void setMemberMediaStoreCursor(Cursor memberMediaStoreCursor) {
+        this.memberMediaStoreCursor = memberMediaStoreCursor;
+    }
 
     public interface OnClickThumbListener {
         void OnClickImage(Uri imageUri);
@@ -168,7 +175,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         }
     }
 
-    private Uri getUriFromMediaStore(int position) {
+    public Uri getUriFromMediaStore(int position) {
         int dataIndex = memberMediaStoreCursor.getColumnIndex(MediaStore.Files.FileColumns.DATA);
         memberMediaStoreCursor.moveToPosition(position);
 

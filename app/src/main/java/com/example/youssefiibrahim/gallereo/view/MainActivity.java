@@ -34,9 +34,11 @@ import com.example.youssefiibrahim.gallereo.presenter.DataRW;
 import com.example.youssefiibrahim.gallereo.presenter.DecodeImages;
 import com.example.youssefiibrahim.gallereo.presenter.ProcessAndSaveThread;
 import com.example.youssefiibrahim.gallereo.presenter.communication;
+import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity
     private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
     private final static int MEDIASTORE_LOADER_ID = 0;
     private RecyclerView memberRecyclerView;
-    private MediaStorageAdapter memberMediaStoreAdapter;
+    public static MediaStorageAdapter memberMediaStoreAdapter;
     private Toolbar toolbar;
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String> allPaths;
@@ -161,7 +163,7 @@ public class MainActivity extends AppCompatActivity
             case READ_EXTERNAL_STORAGE_PERMISSION_RESULT:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Call cursor loader
-                    Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
                     getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
                     try {
                         prepareData();
@@ -235,6 +237,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         memberMediaStoreAdapter.changeCursor(null);
+    }
+
+    public MediaStorageAdapter getMemberMediaStoreAdapter() {
+        return memberMediaStoreAdapter;
+    }
+
+    public void setMemberMediaStoreAdapter(MediaStorageAdapter memberMediaStoreAdapter) {
+        this.memberMediaStoreAdapter = memberMediaStoreAdapter;
     }
 
     @Override

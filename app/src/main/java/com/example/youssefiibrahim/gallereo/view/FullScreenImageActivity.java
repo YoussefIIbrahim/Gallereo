@@ -11,9 +11,12 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.method.Touch;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -29,25 +32,25 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.youssefiibrahim.gallereo.R;
+import com.google.gson.Gson;
 
 
 public class FullScreenImageActivity extends AppCompatActivity implements
         View.OnLongClickListener, View.OnClickListener {
 
     private Uri mImageUri;
+    private MediaStorageAdapter mainMemberMediaStoreAdapter;
     private Toolbar toolbar;
+    private GestureDetector gdt;
+    private static final int MIN_SWIPPING_DISTANCE = 25;
+    private static final int THRESHOLD_VELOCITY = 25;
+    private TouchImageView fullScreenImageView;
+    private boolean safe2Swipe;
 
-
-    public Uri getmImageUri() {
-        return mImageUri;
-    }
-
-    public Toolbar getToolbar() {
-        return toolbar;
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -55,11 +58,21 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_image);
 
-        TouchImageView fullScreenImageView = (TouchImageView) findViewById(R.id.fullScreenImageView);
-//        ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
+        fullScreenImageView = (TouchImageView) findViewById(R.id.fullScreenImageView);
 
-//        pAttacher = new PhotoViewAttacher(fullScreenImageView);
-//        pAttacher.update();
+        mainMemberMediaStoreAdapter = MainActivity.memberMediaStoreAdapter;
+
+        gdt = new GestureDetector(new GestureListener());
+
+        fullScreenImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(final View view, final MotionEvent event) {
+                safe2Swipe = true;
+                gdt.onTouchEvent(event);
+                return true;
+            }
+
+        });
 
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.full_screen_relative_layout);
         relativeLayout.setOnLongClickListener(this);
@@ -73,6 +86,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
 
 
         Intent callingActivityIntent = getIntent();
+
         if (callingActivityIntent != null) {
             mImageUri = callingActivityIntent.getData();
             if (mImageUri != null && fullScreenImageView != null) {
@@ -144,4 +158,42 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         }
     }
 
+    private void changeImage(Uri uri) {
+        RequestOptions options = new RequestOptions();
+        options.fitCenter();
+        options.format(DecodeFormat.PREFER_ARGB_8888);
+        options.override(Target.SIZE_ORIGINAL);
+        options.diskCacheStrategy(DiskCacheStrategy.ALL);
+
+        Glide.with(this)
+                .load(uri)
+                .apply(options)
+                .into(fullScreenImageView);
+        safe2Swipe = false;
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            System.out.println("Inside onFlign " + safe2Swipe);
+            if (!fullScreenImageView.isZoomed() &&
+                    e2.getX() - e1.getX() > MIN_SWIPPING_DISTANCE &&
+                    Math.abs(velocityX) > THRESHOLD_VELOCITY &&
+                    mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToPrevious()) {
+                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
+                    changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
+                    return true;
+
+            } else if (!FullScreenImageActivity.this.fullScreenImageView.isZoomed() &&
+                    e1.getX() - e2.getX() > MIN_SWIPPING_DISTANCE &&
+                    Math.abs(velocityX) > THRESHOLD_VELOCITY &&
+                    mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToNext()) {
+                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
+                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
+                    return true;
+            }
+            safe2Swipe = false;
+            return false;
+        }
+    }
 }
