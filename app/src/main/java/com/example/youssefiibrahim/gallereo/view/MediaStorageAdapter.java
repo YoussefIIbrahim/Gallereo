@@ -80,10 +80,13 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         if (searchMode) {
-
+            RequestOptions myOptions = new RequestOptions()
+                    .fitCenter()
+                    .override(PRELOAD_WIDTH , PRELOAD_WIDTH);
             Glide.with(memberActivity)
                     .asBitmap()
                     .load(mImages.get(i))
+                    .apply(myOptions)
                     .into(viewHolder.getMemberImageView());
             contentIterator += 1;
         } else {
