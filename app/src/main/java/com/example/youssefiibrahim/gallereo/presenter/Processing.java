@@ -17,6 +17,8 @@ import java.lang.reflect.GenericSignatureFormatError;
 
 public class Processing {
 
+    private static Gson jsonify = new Gson();
+
     public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality)
     {
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
@@ -42,12 +44,12 @@ public class Processing {
     }
 
     public static String toJson(Object obj) {
-        return new Gson().toJson(obj);
+        return jsonify.toJson(obj);
     }
 
 
     public static Object fromJson(String jsonString, Class<?> cls) {
-        return new Gson().fromJson(jsonString, cls);
+        return jsonify.fromJson(jsonString, cls);
     }
 
 
