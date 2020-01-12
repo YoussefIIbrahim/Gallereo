@@ -37,7 +37,7 @@ import java.util.List;
 
 public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> implements Filterable {
 
-    private static final int PRELOAD_WIDTH = 300;
+    private static final int PRELOAD_WIDTH = 150;
     private Cursor memberMediaStoreCursor;
     private final Activity memberActivity;
     private OnClickThumbListener mOnClickThumbListener;
