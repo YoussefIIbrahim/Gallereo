@@ -43,7 +43,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     private OnClickThumbListener mOnClickThumbListener;
     private ArrayList<String> mImages = new ArrayList<>();
     private ArrayList<String> allPaths;
-    private Boolean searchMode;
+    public Boolean searchMode;
     private int contentIterator;
     private String TAG = "FROM MEDIASTORAGE ADAPTER: ";
 
@@ -57,12 +57,13 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
     public interface OnClickThumbListener {
         void OnClickImage(Uri imageUri);
+
         void OnClickVideo(Uri videoUri);
     }
 
     public MediaStorageAdapter(Activity memberActivity, ArrayList<String> images, Boolean searchMode, ArrayList<String> allPaths) {
         this.memberActivity = memberActivity;
-        this.mOnClickThumbListener = (OnClickThumbListener)memberActivity;
+        this.mOnClickThumbListener = (OnClickThumbListener) memberActivity;
         this.mImages = images;
         this.searchMode = searchMode;
         this.allPaths = allPaths;
@@ -82,7 +83,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         if (searchMode) {
             RequestOptions myOptions = new RequestOptions()
                     .fitCenter()
-                    .override(PRELOAD_WIDTH , PRELOAD_WIDTH);
+                    .override(PRELOAD_WIDTH, PRELOAD_WIDTH);
             Glide.with(memberActivity)
                     .asBitmap()
                     .load(mImages.get(i))
@@ -92,7 +93,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         } else {
             RequestOptions myOptions = new RequestOptions()
                     .fitCenter()
-                    .override(PRELOAD_WIDTH , PRELOAD_WIDTH);
+                    .override(PRELOAD_WIDTH, PRELOAD_WIDTH);
             Glide.with(memberActivity)
                     .asBitmap()
                     .load(getUriFromMediaStore(i))
@@ -110,7 +111,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final ImageView memberImageView;
 
@@ -156,10 +157,10 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         memberMediaStoreCursor.moveToPosition(position);
 
         //Check if video or image
-        switch(memberMediaStoreCursor.getInt(mediaTypeIndex)) {
+        switch (memberMediaStoreCursor.getInt(mediaTypeIndex)) {
             case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
                 return MediaStore.Images.Thumbnails.getThumbnail(
-                    memberActivity.getContentResolver(),
+                        memberActivity.getContentResolver(),
                         memberMediaStoreCursor.getLong(idIndex),
                         MediaStore.Images.Thumbnails.MINI_KIND,
                         null
@@ -187,7 +188,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         return mediaUri;
     }
 
-    private void getOnClickUri(int position) {
+    public void getOnClickUri(int position) {
         if (searchMode) {
             String authorities = memberActivity.getPackageName() + ".fileprovider";
             Uri mediaUri = FileProvider.getUriForFile(memberActivity, authorities, new File(mImages.get(position)));
@@ -257,7 +258,7 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     };
 
 
-    private void initImageBitmaps(){
+    private void initImageBitmaps() {
         mImages = new ArrayList<>();
 
         mImages.add("/storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20191108-WA0020.jpg");

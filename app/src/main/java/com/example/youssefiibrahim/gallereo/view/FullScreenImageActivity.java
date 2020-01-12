@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -50,6 +51,7 @@ public class FullScreenImageActivity extends AppCompatActivity implements
     private static final int THRESHOLD_VELOCITY = 25;
     private TouchImageView fullScreenImageView;
     private boolean safe2Swipe;
+    private int currentApiVersion;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -57,8 +59,27 @@ public class FullScreenImageActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_image);
-
+        currentApiVersion = android.os.Build.VERSION.SDK_INT;
+        final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+            final View decorView = getWindow().getDecorView();
+            decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                @Override
+                public void onSystemUiVisibilityChange(int visibility) {
+                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                        decorView.setSystemUiVisibility(flags);
+                    }
+                }
+            });
+        }
         fullScreenImageView = (TouchImageView) findViewById(R.id.fullScreenImageView);
+//        fullScreenImageView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                | View.SYSTEM_UI_FLAG_FULLSCREEN);
 
         mainMemberMediaStoreAdapter = MainActivity.memberMediaStoreAdapter;
 
@@ -104,6 +125,18 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         }
     }
 
+    @SuppressLint("NewApi")
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -132,6 +165,13 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -139,6 +179,12 @@ public class FullScreenImageActivity extends AppCompatActivity implements
 
         if (id == android.R.id.home) {
             this.finish();
+            if (!mainMemberMediaStoreAdapter.searchMode) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -177,20 +223,24 @@ public class FullScreenImageActivity extends AppCompatActivity implements
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             System.out.println("Inside onFlign " + safe2Swipe);
             if (!fullScreenImageView.isZoomed() &&
+                    !mainMemberMediaStoreAdapter.searchMode &&
                     e2.getX() - e1.getX() > MIN_SWIPPING_DISTANCE &&
                     Math.abs(velocityX) > THRESHOLD_VELOCITY &&
                     mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToPrevious()) {
-                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
-                    changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
-                    return true;
+                mainMemberMediaStoreAdapter.getOnClickUri(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition());
+//                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
+//                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
+                return true;
 
-            } else if (!FullScreenImageActivity.this.fullScreenImageView.isZoomed() &&
+            } else if (!fullScreenImageView.isZoomed() &&
+                    !mainMemberMediaStoreAdapter.searchMode &&
                     e1.getX() - e2.getX() > MIN_SWIPPING_DISTANCE &&
                     Math.abs(velocityX) > THRESHOLD_VELOCITY &&
                     mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToNext()) {
-                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
-                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
-                    return true;
+                mainMemberMediaStoreAdapter.getOnClickUri(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition());
+//                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
+//                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
+                return true;
             }
             safe2Swipe = false;
             return false;

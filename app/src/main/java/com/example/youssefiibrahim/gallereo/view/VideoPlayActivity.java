@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
@@ -21,8 +22,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -34,17 +37,23 @@ import android.widget.RelativeLayout;
 
 import com.example.youssefiibrahim.gallereo.R;
 
-public class VideoPlayActivity  extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener{
+public class VideoPlayActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
 
     private static final String TAG = "VideoPlayActivity";
 
     private MediaPlayer mMediaPlayer;
+    private MediaStorageAdapter mainMemberMediaStoreAdapter;
     private Uri mVideoUri;
     private ImageButton mPlayPauseButton;
     private SurfaceView mSurfaceView;
     private Toolbar toolbar;
     private MenuItem mPlayPauseMenuItem;
     private BottomNavigationView bottomNavigationView;
+    private GestureDetector gdt;
+    private static final int MIN_SWIPPING_DISTANCE = 25;
+    private static final int THRESHOLD_VELOCITY = 25;
+    private boolean safe2Swipe;
+    private int currentApiVersion;
 
 
     private MediaControllerCompat mController;
@@ -124,7 +133,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
 
         private void releaseResources() {
             mSession.setActive(false);
-            if(mMediaPlayer != null) {
+            if (mMediaPlayer != null) {
                 mMediaPlayer.stop();
                 mMediaPlayer.reset();
                 mMediaPlayer.release();
@@ -135,7 +144,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
         private void mediaPlay() {
             registerReceiver(mAudioBecommingNoisy, mNoisyIntentFilter);
             int requestAudioFocusResult = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-            if(requestAudioFocusResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            if (requestAudioFocusResult == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 mSession.setActive(true);
                 mPBuilder.setActions(PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_STOP);
                 mPBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
@@ -153,7 +162,6 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
                     mMediaPlayer.getCurrentPosition(), 1.0f, SystemClock.elapsedRealtime());
             mSession.setPlaybackState(mPBuilder.build());
             mAudioManager.abandonAudioFocus(this);
-            LocalBroadcastManager.getInstance(this.mContext).unregisterReceiver(mAudioBecommingNoisy);
         }
 
         @Override
@@ -169,7 +177,6 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
 
         @Override
         public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
         }
 
         @Override
@@ -197,20 +204,52 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
     }
 
 
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
+        currentApiVersion = android.os.Build.VERSION.SDK_INT;
+        final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+            final View decorView = getWindow().getDecorView();
+            decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                @Override
+                public void onSystemUiVisibilityChange(int visibility) {
+                    if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                        decorView.setSystemUiVisibility(flags);
+                    }
+                }
+            });
+        }
 
+        mainMemberMediaStoreAdapter = MainActivity.memberMediaStoreAdapter;
         mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
+//        mSurfaceView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+        gdt = new GestureDetector(new VideoPlayActivity.GestureListener());
+
+        mSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(final View view, final MotionEvent event) {
+                safe2Swipe = true;
+                gdt.onTouchEvent(event);
+                return true;
+            }
+
+        });
 
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.video_relative_layout);
         relativeLayout.setOnLongClickListener(this);
         relativeLayout.setOnClickListener(this);
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar1);
+        toolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -228,7 +267,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
         mPlayPauseMenuItem = menu.findItem(R.id.videoPlayPauseMenuItem);
 
         Intent callingIntent = this.getIntent();
-        if(callingIntent != null) {
+        if (callingIntent != null) {
             mVideoUri = callingIntent.getData();
         }
 
@@ -239,6 +278,18 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
         mController = new MediaControllerCompat(this, mSession);
         mControllerTransportControls = mController.getTransportControls();
 
+    }
+
+    @SuppressLint("NewApi")
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     }
 
     @Override
@@ -270,7 +321,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
             bottomNavigationView.getMenu()
                     .findItem(R.id.videoPlayPauseMenuItem)
                     .setVisible(false);
-            } else {
+        } else {
 //                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             toolbar.animate().translationY(0).
                     setInterpolator(new DecelerateInterpolator()).start();
@@ -278,7 +329,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
             bottomNavigationView.getMenu()
                     .findItem(R.id.videoPlayPauseMenuItem)
                     .setVisible(true);
-            }
+        }
     }
 
     @Override
@@ -289,7 +340,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
     }
 
     public void playPauseClick(View view) {
-        if(mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
             mControllerTransportControls.pause();
         } else if (mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED ||
                 mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_STOPPED ||
@@ -303,7 +354,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
     protected void onStop() {
 
         mController.unregisterCallback(mControllerCallback);
-        if(mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING ||
+        if (mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING ||
                 mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
             mControllerTransportControls.stop();
         }
@@ -323,7 +374,7 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
     @Override
     protected void onPause() {
 
-        if(mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+        if (mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
             mControllerTransportControls.pause();
         }
         super.onPause();
@@ -333,8 +384,15 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         mSession.release();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
     }
 
     @Override
@@ -343,6 +401,12 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
 
         if (id == android.R.id.home) {
             this.finish();
+            if (!mainMemberMediaStoreAdapter.searchMode) {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -354,20 +418,47 @@ public class VideoPlayActivity  extends AppCompatActivity implements View.OnClic
         float video_Width = mediaPlayer.getVideoWidth();
         float video_Height = mediaPlayer.getVideoHeight();
 
-        float ratio_width = surfaceView_Width/video_Width;
-        float ratio_height = surfaceView_Height/video_Height;
-        float aspectratio = video_Width/video_Height;
+        float ratio_width = surfaceView_Width / video_Width;
+        float ratio_height = surfaceView_Height / video_Height;
+        float aspectratio = video_Width / video_Height;
 
         ViewGroup.LayoutParams layoutParams = surfaceView.getLayoutParams();
 
-        if (ratio_width > ratio_height){
+        if (ratio_width > ratio_height) {
             layoutParams.width = (int) (surfaceView_Height * aspectratio);
             layoutParams.height = surfaceView_Height;
-        }else{
+        } else {
             layoutParams.width = surfaceView_Width;
             layoutParams.height = (int) (surfaceView_Width / aspectratio);
         }
 
         surfaceView.setLayoutParams(layoutParams);
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            System.out.println("Inside onFlign " + safe2Swipe);
+            if (!mainMemberMediaStoreAdapter.searchMode &&
+                    e2.getX() - e1.getX() > MIN_SWIPPING_DISTANCE &&
+                    Math.abs(velocityX) > THRESHOLD_VELOCITY &&
+                    mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToPrevious()) {
+                mainMemberMediaStoreAdapter.getOnClickUri(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition());
+//                mVideoUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
+//                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
+                return true;
+
+            } else if (!mainMemberMediaStoreAdapter.searchMode &&
+                    e1.getX() - e2.getX() > MIN_SWIPPING_DISTANCE &&
+                    Math.abs(velocityX) > THRESHOLD_VELOCITY &&
+                    mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToNext()) {
+                mainMemberMediaStoreAdapter.getOnClickUri(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition());
+//                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
+//                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
+                return true;
+            }
+            safe2Swipe = false;
+            return false;
+        }
     }
 }

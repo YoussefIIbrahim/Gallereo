@@ -252,6 +252,7 @@ public class MainActivity extends AppCompatActivity
         // Toast.makeText(MediaThumbMainActivity.this, "Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
         Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         fullScreenIntent.setData(imageUri);
+        fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(fullScreenIntent);
     }
 
@@ -259,6 +260,7 @@ public class MainActivity extends AppCompatActivity
     public void OnClickVideo(Uri videoUri) {
         Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
         videoPlayIntent.setData(videoUri);
+        videoPlayIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(videoPlayIntent);
     }
 
