@@ -2,7 +2,6 @@ package com.example.youssefiibrahim.gallereo.view;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -17,7 +16,6 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -28,7 +26,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.OverScroller;
 import android.support.v7.widget.AppCompatImageView;
-import android.widget.Toast;
 
 import com.example.youssefiibrahim.gallereo.R;
 

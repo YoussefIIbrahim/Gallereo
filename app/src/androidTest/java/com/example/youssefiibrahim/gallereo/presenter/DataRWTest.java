@@ -55,18 +55,9 @@ public class DataRWTest {
         ArrayList<String> actual = DataRW.filterPaths(list);
         ArrayList<String> expected = new ArrayList<>();
         expected.add("Habbab"); expected.add("Helwani");
-        System.out.println("expected = " + expected);
-        System.out.println("actual = " + actual);
         assertEquals(expected, actual);
         assertEquals(2, ResponseWrapper.singleton.responses.size());
     }
-
-//    @Test
-//    public void shouldGetImages() throws IOException {
-//        ImageStructuresWrapper wrapper = DataRW.getImages(mainActivity);
-//        String json = Processing.toJson(wrapper);
-//        assertTrue(wrapper != null);
-//    }
 
     @Test
     public void shouldGetImagesUri() throws FileNotFoundException {

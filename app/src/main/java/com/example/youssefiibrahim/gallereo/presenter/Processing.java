@@ -3,17 +3,11 @@ package com.example.youssefiibrahim.gallereo.presenter;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.util.Base64;
 
-import com.example.youssefiibrahim.gallereo.model.ImageStructure;
-
-import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
-import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.GenericSignatureFormatError;
 
 public class Processing {
 

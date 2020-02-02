@@ -41,7 +41,6 @@ public class communication {
 
 
         OutputStream out = null;
-        System.out.println("BEFORE CONNECT");
         urlConnection.connect();
         out = new BufferedOutputStream(urlConnection.getOutputStream());
 
@@ -52,16 +51,12 @@ public class communication {
         out.close();
         available.release();
 
-        System.out.println("BEFORE RESPONSE CODE");
         Integer responseCode = urlConnection.getResponseCode();
-        System.out.println("RESPONSE CODE = " + responseCode);
 
-        System.out.println("Error: "+ urlConnection.getErrorStream());
         if (responseCode != 200) {
             Log.e("ResponseCode", "response code is " + responseCode);
             return "";
         }
-        //System.out.println("INPUT: " + urlConnection.getInputStream());
         InputStream in = urlConnection.getInputStream();
         String response = new String();
         int count = 0;
@@ -79,13 +74,11 @@ public class communication {
             try{
                 toSendString = Processing.toJson(wrapper);
             } catch (OutOfMemoryError e) {
-                System.err.println(e.getMessage());
                 Thread.sleep(500);
                 continue;
             }
             break;
         }
-        System.out.println("SIZE OF JSON = " + toSendString.length());
         byte[] bts = new byte[10000];
         String response = sendHttpRequest(toSendString, LABELER_URL, "application/json", bts).trim();
 

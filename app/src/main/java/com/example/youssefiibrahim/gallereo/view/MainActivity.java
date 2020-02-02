@@ -1,7 +1,6 @@
 package com.example.youssefiibrahim.gallereo.view;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -10,7 +9,6 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
@@ -18,7 +16,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -28,19 +25,11 @@ import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 import com.example.youssefiibrahim.gallereo.R;
-import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
-import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import com.example.youssefiibrahim.gallereo.presenter.DataRW;
 import com.example.youssefiibrahim.gallereo.presenter.DecodeImages;
-import com.example.youssefiibrahim.gallereo.presenter.ProcessAndSaveThread;
-import com.example.youssefiibrahim.gallereo.presenter.communication;
-import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -70,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        memberRecyclerView = (RecyclerView) findViewById(R.id.thumbnailRecyclerView);
+        memberRecyclerView = findViewById(R.id.thumbnailRecyclerView);
 
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
@@ -100,19 +89,14 @@ public class MainActivity extends AppCompatActivity
         if (isPermissionGranted()) {
 
             ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
-            System.out.println("imagesToProcess = " + imagesToProcess);
             if (!imagesToProcess.isEmpty()) {
                 createThreads(imagesToProcess);
             }
-//            ProcessAndSaveThread thread = new ProcessAndSaveThread(imagesToProcess, this);
-//            thread.start();
         }
 
     }
 
     private void createThreads(ArrayList<String> paths) {
-//        ProcessAndSaveThread thread = new ProcessAndSaveThread(paths, this);
-//        thread.start();
         new DecodeImages(this).execute(paths);
     }
 
@@ -126,29 +110,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
 
-//                Context context = getApplicationContext();
-//                int duration = Toast.LENGTH_SHORT;
-
-//                Toast toast = Toast.makeText(context, query, duration);
-//                toast.show();
-//                memberRecyclerView.invalidate();
-//                memberRecyclerView.setAdapter(null);
-//                initImageBitmaps();
                 memberMediaStoreAdapter.getFilter().filter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                Context context = getApplicationContext();
-//                int duration = Toast.LENGTH_SHORT;
-//
-//                Toast toast = Toast.makeText(context, newText, duration);
-//                toast.show();
-//                if (Integer.parseInt(String.valueOf(searchView.getQuery().length())) == 0) {
-//                    memberMediaStoreAdapter.getFilter().filter(newText);
-//                }
-
                 memberMediaStoreAdapter.getFilter().filter(newText);
 
                 return false;
@@ -162,17 +129,12 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode) {
             case READ_EXTERNAL_STORAGE_PERMISSION_RESULT:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Call cursor loader
-//                    Toast.makeText(this,"Permission Granted", Toast.LENGTH_SHORT).show();
                     getSupportLoaderManager().initLoader(MEDIASTORE_LOADER_ID, null, this);
                     try {
                         prepareData();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-//                    this.allPaths = DataRW.getImagesPath(this);
-//                    ProcessAndSaveThread thread = new ProcessAndSaveThread(this.allPaths, this);
-//                    thread.start();
                 }
                 break;
             default:
@@ -249,7 +211,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void OnClickImage(Uri imageUri) {
-        // Toast.makeText(MediaThumbMainActivity.this, "Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
         Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         fullScreenIntent.setData(imageUri);
         fullScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

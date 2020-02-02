@@ -11,8 +11,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
-
 public class ProcessImagesAndSaveTest {
 
 
@@ -30,7 +28,6 @@ public class ProcessImagesAndSaveTest {
     public void shouldProcessImagesAndSave() {
         ArrayList<String> allPaths = DataRW.getImagesPath(mainActivity);
         ArrayList<String> imagesToProcess = DataRW.filterPaths(allPaths);
-        System.out.println("allPaths = " + allPaths);
         new DecodeImages(mainActivity).execute(imagesToProcess);
     }
 }

@@ -1,15 +1,11 @@
 package com.example.youssefiibrahim.gallereo.presenter;
 
-import android.content.Context;
-
-import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
 import com.example.youssefiibrahim.gallereo.model.Pair;
 import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 import com.example.youssefiibrahim.gallereo.model.Response;
 import com.example.youssefiibrahim.gallereo.model.ResponseItem;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeSet;

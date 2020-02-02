@@ -11,9 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -314,7 +312,6 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View v) {
         if (getSupportActionBar().isShowing()) {
-//                        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             toolbar.animate().translationY(-toolbar.getBottom()).
                     setInterpolator(new AccelerateInterpolator()).start();
             getSupportActionBar().hide();
@@ -322,7 +319,6 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                     .findItem(R.id.videoPlayPauseMenuItem)
                     .setVisible(false);
         } else {
-//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             toolbar.animate().translationY(0).
                     setInterpolator(new DecelerateInterpolator()).start();
             getSupportActionBar().show();
@@ -438,14 +434,11 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            System.out.println("Inside onFlign " + safe2Swipe);
             if (!mainMemberMediaStoreAdapter.searchMode &&
                     e2.getX() - e1.getX() > MIN_SWIPPING_DISTANCE &&
                     Math.abs(velocityX) > THRESHOLD_VELOCITY &&
                     mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToPrevious()) {
                 mainMemberMediaStoreAdapter.getOnClickUri(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition());
-//                mVideoUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
-//                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
                 return true;
 
             } else if (!mainMemberMediaStoreAdapter.searchMode &&
@@ -453,8 +446,6 @@ public class VideoPlayActivity extends AppCompatActivity implements View.OnClick
                     Math.abs(velocityX) > THRESHOLD_VELOCITY &&
                     mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().moveToNext()) {
                 mainMemberMediaStoreAdapter.getOnClickUri(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition());
-//                mImageUri = Uri.parse(String.valueOf(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition())).substring("file://".length()));
-//                changeImage(mainMemberMediaStoreAdapter.getUriFromMediaStore(mainMemberMediaStoreAdapter.getMemberMediaStoreCursor().getPosition()));
                 return true;
             }
             safe2Swipe = false;

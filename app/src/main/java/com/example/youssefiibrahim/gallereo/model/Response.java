@@ -46,7 +46,6 @@ public class Response implements Comparable{
     @NonNull
     @Override
     public String toString() {
-        System.out.println("CALLING TOSTRING");
         return id + "," + data.toString();
     }
 

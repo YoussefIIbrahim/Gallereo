@@ -3,8 +3,6 @@ package com.example.youssefiibrahim.gallereo.presenter;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.youssefiibrahim.gallereo.model.Request;
-
 import java.io.IOException;
 import java.util.ArrayList;
 

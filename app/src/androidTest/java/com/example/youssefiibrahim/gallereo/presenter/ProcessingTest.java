@@ -1,10 +1,7 @@
 package com.example.youssefiibrahim.gallereo.presenter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.Debug;
-import android.util.Log;
 
 import com.example.youssefiibrahim.gallereo.model.ImageStructure;
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
@@ -15,14 +12,12 @@ import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 import static org.junit.Assert.*;
 
 public class ProcessingTest{
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @Test

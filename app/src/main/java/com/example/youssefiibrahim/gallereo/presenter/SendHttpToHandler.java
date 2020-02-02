@@ -1,16 +1,11 @@
 package com.example.youssefiibrahim.gallereo.presenter;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Filter;
 
 import com.example.youssefiibrahim.gallereo.model.PairWrapper;
-import com.example.youssefiibrahim.gallereo.model.Request;
 import com.example.youssefiibrahim.gallereo.view.MediaStorageAdapter;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class SendHttpToHandler extends AsyncTask<String, String, PairWrapper> {

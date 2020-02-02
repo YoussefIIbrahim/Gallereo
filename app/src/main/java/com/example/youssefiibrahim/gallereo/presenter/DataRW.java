@@ -6,21 +6,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.CursorLoader;
 import android.util.Log;
 
 import com.example.youssefiibrahim.gallereo.model.ImageStructure;
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
 import com.example.youssefiibrahim.gallereo.model.Response;
 import com.example.youssefiibrahim.gallereo.model.ResponseWrapper;
-import com.google.android.gms.common.util.Predicate;
-
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +22,6 @@ import java.io.OutputStreamWriter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.TreeSet;
 
 public class DataRW {
@@ -87,39 +79,17 @@ public class DataRW {
         String content = readFromFile(context);
         if (!content.isEmpty()) {
             ResponseWrapper.singleton = (ResponseWrapper) Processing.fromJson(content, ResponseWrapper.class);
-            System.out.println("FILE READ " + content);
         }
     }
 
     public static void processAndSave(ArrayList<String> paths, Context context) throws IOException, InterruptedException {
         ArrayList<ImageStructuresWrapper> wrappers = getImages(paths);
 
-        System.out.println("STARTED REQUESTING LABELS");
         ResponseWrapper responseWrapper = new ResponseWrapper();
 
         for (ImageStructuresWrapper imageStructuresWrapper : wrappers) {
             responseWrapper.add(communication.requestLabels(imageStructuresWrapper));
         }
-        System.out.println("FINISHED REQUESTING LABELS");
-        if (ResponseWrapper.singleton == null) {
-            ResponseWrapper.singleton = new ResponseWrapper();
-        }
-        ResponseWrapper.singleton.add(responseWrapper);
-        // now commit to device
-        String json = Processing.toJson(ResponseWrapper.singleton);
-        writeToFile(json, context);
-    }
-
-    public static void processAndSave2(ArrayList<ImageStructuresWrapper> wrappers, Context context) throws IOException, InterruptedException {
-        System.out.println("STARTED REQUESTING LABELS");
-        ResponseWrapper responseWrapper = new ResponseWrapper();
-
-        for (ImageStructuresWrapper imageStructuresWrapper : wrappers) {
-
-            responseWrapper.add(communication.requestLabels(imageStructuresWrapper));
-        }
-
-        System.out.println("FINISHED REQUESTING LABELS");
         if (ResponseWrapper.singleton == null) {
             ResponseWrapper.singleton = new ResponseWrapper();
         }
@@ -134,7 +104,6 @@ public class DataRW {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(PATH, Context.MODE_PRIVATE));
             outputStreamWriter.write(data);
             outputStreamWriter.close();
-            System.out.println("LABELS.JSON has been written");
         }
         catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
@@ -171,12 +140,10 @@ public class DataRW {
         return ret;
     }
 
-    public static ArrayList<ImageStructuresWrapper> getImages(ArrayList<String> files) throws FileNotFoundException {
+    public static ArrayList<ImageStructuresWrapper> getImages(ArrayList<String> files) {
 
         ArrayList<ImageStructuresWrapper> ret = new ArrayList<>();
         ImageStructuresWrapper imageWrapper = new ImageStructuresWrapper();
-        System.out.println("Started reading images " + files.size());
-        Instant start = Instant.now();
         for (int i = 0; i < files.size(); i++) {
             String file = files.get(i);
 
@@ -184,9 +151,6 @@ public class DataRW {
             // Get bitmap dimensions before reading...
             opts.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(file, opts);
-            int width = opts.outWidth;
-            int height = opts.outHeight;
-            int largerSide = Math.max(width, height);
             opts.inJustDecodeBounds = false; // This time it's for real!
             int sampleSize = 1; // Calculate your sampleSize here
             opts.inSampleSize = sampleSize;
@@ -209,24 +173,14 @@ public class DataRW {
             ret.add(imageWrapper);
         }
 
-        Instant end = Instant.now();
-        Duration timeElapsed = Duration.between(start, end);
-        System.out.println("Time taken: "+ timeElapsed.toMillis() +" milliseconds");
-        System.out.println("Finished reading images " + ret.size());
         return ret;
     }
-
-//    public static ImageStructuresWrapper getImages(Activity activity) throws FileNotFoundException {
-//        ArrayList<String> files = getImagesPath(activity);
-//        return getImages(files);
-//    }
-
 
     public static ArrayList<String> getImagesPath(Activity activity) {
         Uri uri;
         ArrayList<String> listOfAllImages = new ArrayList<String>();
         Cursor cursor;
-        int column_index_data, column_index_folder_name;
+        int column_index_data;
         String PathOfImage = null;
         uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
@@ -237,8 +191,6 @@ public class DataRW {
                 null, null);
 
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_folder_name = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
         while (cursor.moveToNext()) {
             PathOfImage = cursor.getString(column_index_data);
 

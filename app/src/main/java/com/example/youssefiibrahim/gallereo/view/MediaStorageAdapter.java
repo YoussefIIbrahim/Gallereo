@@ -1,7 +1,6 @@
 package com.example.youssefiibrahim.gallereo.view;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,31 +8,21 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.youssefiibrahim.gallereo.R;
-import com.example.youssefiibrahim.gallereo.model.PairWrapper;
-import com.example.youssefiibrahim.gallereo.presenter.CoreAlgorithms;
-import com.example.youssefiibrahim.gallereo.presenter.DataRW;
 import com.example.youssefiibrahim.gallereo.presenter.SendHttpToHandler;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
 
 public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapter.ViewHolder> implements Filterable {
 
@@ -44,7 +33,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
     private ArrayList<String> mImages = new ArrayList<>();
     private ArrayList<String> allPaths;
     public Boolean searchMode;
-    private int contentIterator;
     private String TAG = "FROM MEDIASTORAGE ADAPTER: ";
 
     public Cursor getMemberMediaStoreCursor() {
@@ -67,7 +55,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         this.mImages = images;
         this.searchMode = searchMode;
         this.allPaths = allPaths;
-        this.contentIterator = 0;
     }
 
     @NonNull
@@ -89,7 +76,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                     .load(mImages.get(i))
                     .apply(myOptions)
                     .into(viewHolder.getMemberImageView());
-            contentIterator += 1;
         } else {
             RequestOptions myOptions = new RequestOptions()
                     .fitCenter()
@@ -224,8 +210,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         // SHOW IMAGES
         mImages = paths;
         notifyDataSetChanged();
-        System.out.println("PATHS = " + paths);
-
     }
 
     private Filter exampleFilter = new Filter() {
@@ -237,10 +221,8 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
                 notifyDataSetChanged();
             } else {
                 searchMode = true;
-                contentIterator = 0;
                 new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
             }
-            System.out.println("NO HTTP REQUEST: " + searchMode);
             FilterResults results = new FilterResults();
             results.values = mImages;
             return results;
@@ -248,12 +230,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-//            new SendHttpToHandler(MediaStorageAdapter.this).execute(constraint.toString());
-//            initImageBitmaps();
-//            searchMode = true;
-//            mImages.clear();
-//            mImages.addAll((List) results.values);
-//            notifyDataSetChanged();
         }
     };
 
@@ -266,20 +242,6 @@ public class MediaStorageAdapter extends RecyclerView.Adapter<MediaStorageAdapte
         mImages.add("/storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20191108-WA0020.jpg");
         mImages.add("/storage/emulated/0/DCIM/Camera/20191216_215937.jpg");
 
-//        mImages.add("https://i.redd.it/tpsnoz5bzo501.jpg");
-//
-//        mImages.add("https://i.redd.it/qn7f9oqu7o501.jpg");
-//
-//        mImages.add("https://i.redd.it/j6myfqglup501.jpg");
-//
-//        mImages.add("https://i.redd.it/0h2gm1ix6p501.jpg");
-//
-//        mImages.add("https://i.redd.it/k98uzl68eh501.jpg");
-//
-//        mImages.add("https://i.redd.it/glin0nwndo501.jpg");
-//
-//        mImages.add("https://i.redd.it/obx4zydshg601.jpg");
-//
 //        mImages.add("https://i.imgur.com/ZcLLrkY.jpg");
 
     }

@@ -7,11 +7,7 @@ import android.os.AsyncTask;
 
 import com.example.youssefiibrahim.gallereo.model.ImageStructure;
 import com.example.youssefiibrahim.gallereo.model.ImageStructuresWrapper;
-import com.example.youssefiibrahim.gallereo.model.PairWrapper;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 
 public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<ImageStructuresWrapper>> {
@@ -30,8 +26,6 @@ public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<I
 
         ArrayList<ImageStructuresWrapper> ret = new ArrayList<>();
         ImageStructuresWrapper imageWrapper = new ImageStructuresWrapper();
-        System.out.println("Started reading images " + files.size());
-        Instant start = Instant.now();
         for (int i = 0; i < files.size(); i++) {
             String file = files.get(i);
 
@@ -57,7 +51,6 @@ public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<I
                     imageEncoded = Processing.encodeToBase64(resizedBitmap == null ? b : resizedBitmap, Bitmap.CompressFormat.JPEG, 100);
 
                 } catch (OutOfMemoryError e) {
-                    System.err.println(e.getMessage());
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException ex) {
@@ -74,30 +67,17 @@ public class DecodeImages extends AsyncTask<ArrayList<String>, Void, ArrayList<I
                 ProcessImagesAndSave thread = new ProcessImagesAndSave(this.context);
                 thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageWrapper);
                 imageWrapper = new ImageStructuresWrapper();
-                System.out.println("Thread started " + i);
             }
         }
         if (!imageWrapper.imageStructures.isEmpty()) {
             ret.add(imageWrapper);
         }
 
-        Instant end = Instant.now();
-        Duration timeElapsed = Duration.between(start, end);
-        System.out.println("Time taken: "+ timeElapsed.toMillis() +" milliseconds");
-        System.out.println("Finished reading images " + ret.size());
         return ret;
     }
 
 
     protected void onPostExecute(ArrayList<ImageStructuresWrapper> imageStructuresWrappers) {
-//
-//        for (int i = 0; i < imageStructuresWrappers.size() ; ++i) {
-//            ProcessImagesAndSave thread = new ProcessImagesAndSave(this.context);
-//            thread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageStructuresWrappers.get(i));
-//            System.out.println("NEW THREAD STARTED " + i);
-//
-//            break;
-//        }
 
     }
 
